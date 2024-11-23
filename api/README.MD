@@ -1,4 +1,4 @@
-# API REST para gestión de pedidos
+# API REST para gestión de pedidos (pedidos ADA)
 
 Este proyecto es una API REST construida con **Fastify** y **Knex.js** que permite gestionar productos, clientes, pedidos y usuarios con autenticación basada en JWT.
 
