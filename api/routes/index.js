@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken"; // Importamos JSON Web Token
-import Producto from "../models/Producto.js";
-import Cliente from "../models/Cliente.js";
-import Pedido from "../models/Pedido.js";
-import User from "../models/Usuario.js";
+import userControllers from "../controllers/user.js";
+import clienteController from "../controllers/cliente.js";
+import pedidoController from "../controllers/pedido.js";
+import productoCOntroller from "../controllers/producto.js";
+import helloController from "../controllers/hello.js";
 
 async function routes(fastify, options) {
   //middelwares para proteger las rutas
@@ -30,90 +31,32 @@ async function routes(fastify, options) {
     }
   }
 
-  fastify.get("/", async (request, reply) => {
-    return { hello: "world" };
-  });
+  //ojo muy importante pasamos el objeto fastify a todos los controladores y depues si extraemos las funciones
+  const { autenticarUsuario, addUser } = userControllers(fastify);
+  const { obtenerClientes } = clienteController(fastify);
+  const { obtenerPedidos } = pedidoController(fastify);
+  const { allProductos, addProductosFrom } = productoCOntroller(fastify);
+  const { hi } = helloController(fastify);
+
+  //rutas
+  fastify.get("/", hi);
 
   //auth
-  fastify.post("/auth", async (request, reply) => {
-    // Validar que el body esté presente y sea un objeto
-    if (!request.body || typeof request.body !== "object") {
-      return reply.status(400).send({ error: "Body no válido" });
-    }
-    const { user, pass } = request.body;
-    const modeloUser = new User(fastify);
+  fastify.post("/auth", autenticarUsuario);
 
-    try {
-      // 1. Autenticamos al usuario con las credenciales
-      const usuario = await modeloUser.authUser(user, pass);
-      // 2. Crear un token JWT
-      const token = jwt.sign(
-        { id: usuario.id, username: usuario.nombre },
-        fastify.config.JWT_SECRET,
-        { expiresIn: "1h" }
-      );
+  fastify.post("/usuario", addUser);
 
-      // 3. Enviar el token al cliente
-      reply.send({ message: "Autenticación exitosa", token });
-    } catch (error) {
-      reply.status(401).send({ message: error.message });
-    }
-  });
-
-  fastify.post("/usuario", async (request, reply) => {
-    const { user, pass } = request.body;
-    const modeloUser = new User(fastify);
-    const resultado = await modeloUser.addUser(user, pass);
-    if (resultado == 1) {
-      console.log("Esrror al guardar");
-      reply.send("error al guardar el suaurio");
-    } else {
-      reply.send("LISTO USUARIO AGREGADO");
-    }
-  });
   //producto
-  fastify.get(
-    "/producto",
-    { preHandler: authMiddleware },
-    async (request, reply) => {
-      const modelProducto = new Producto(fastify);
-      const products = await modelProducto.obtenerTodos();
-      return reply.send(products);
-    }
-  );
+  fastify.get("/producto", { preHandler: authMiddleware }, allProductos);
+
+  // AGREGAR VARIOS PRODUCTOS DE UNA SOLA VEZ
+  fastify.post("/productos", { preHandler: authMiddleware }, addProductosFrom);
 
   //clientes
-  fastify.get(
-    "/cliente",
-    { preHandler: authMiddleware },
-    async (request, reply) => {
-      const modelCliente = new Cliente(fastify);
-      const clientes = await modelCliente.obtenerTodos();
-      return reply.send(clientes);
-    }
-  );
+  fastify.get("/cliente", { preHandler: authMiddleware }, obtenerClientes);
 
   //pedidos
-  fastify.get(
-    "/pedido",
-    { preHandler: authMiddleware },
-    async (request, reply) => {
-      const modelPedido = new Pedido(fastify);
-      const pedidos = await modelPedido.obtenerTodos();
-      return reply.send(pedidos);
-    }
-  );
-
-  // Ruta protegida
-  fastify.get(
-    "/protected-route",
-    { preHandler: authMiddleware },
-    async (request, reply) => {
-      // Si llegamos aquí, el token es válido y el usuario está autenticado
-      reply.send({ message: "Acceso autorizado", user: request.user });
-    }
-  );
+  fastify.get("/pedido", { preHandler: authMiddleware }, obtenerPedidos);
 }
 
-//ESM
 export default routes;

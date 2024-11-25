@@ -9,6 +9,10 @@ class Producto {
     const allProductos = this.knex("productos").select("*");
     return allProductos;
   }
+
+  async addListOfProduct(listaProducto) {
+    return listaProducto;
+  }
 }
 
 export default Producto;

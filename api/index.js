@@ -3,7 +3,7 @@ import Router from "./routes/index.js";
 import knexPlugin from "./plugin/knex.js";
 import knexfile from "./knexfile.js"; // Tu configuración de Knex
 import envPlugin from "@fastify/env";
-import fastifyEnv from "@fastify/env";
+import cors from "@fastify/cors";
 
 // variables de entorno
 const schema = {
@@ -22,6 +22,12 @@ const options = {
 
 const fastify = Fastify({
   logger: true,
+});
+
+//cors
+await fastify.register(cors, {
+  origin: "*",
+  methods: "GET,POST,PUT,DELETE",
 });
 
 await fastify.register(envPlugin, options);
