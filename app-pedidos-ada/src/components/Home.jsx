@@ -1,25 +1,19 @@
-const home = () => {
+import React, { useState } from "react";
+import BarcodeScanner from "./BarcodeScanner"; // Asegúrate de importar tu componente
+
+const Home = () => {
+  const [scannerActive, setScannerActive] = useState(false);
+
+  const toggleScanner = () => {
+    setScannerActive(!scannerActive);
+  };
+
   return (
-    <div className="grid grid-cols-3 gap-4">
-      <div className="card bg-primary text-primary-content shadow-lg">
-        <div className="card-body">
-          <h2 className="card-title">Clientes</h2>
-          <p>Total: 120</p>
-        </div>
-      </div>
-      <div className="card bg-accent text-accent-content shadow-lg">
-        <div className="card-body">
-          <h2 className="card-title">Productos</h2>
-          <p>Total: 56</p>
-        </div>
-      </div>
-      <div className="card bg-secondary text-secondary-content shadow-lg">
-        <div className="card-body">
-          <h2 className="card-title">Pedidos</h2>
-          <p>Total: 34</p>
-        </div>
-      </div>
+    <div className="container mx-auto mt-10">
+      <h1 className="text-2xl font-bold text-center mb-6">Buscar productos</h1>
+      <BarcodeScanner />
     </div>
   );
 };
-export default home;
+
+export default Home;

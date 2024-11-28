@@ -19,6 +19,7 @@ export const up = async function (knex) {
   // Crear tabla productos
   await knex.schema.createTable("productos", (table) => {
     table.increments("id").primary();
+    table.text("codigo_barra");
     table.string("nombre").notNullable();
     table.text("descripcion");
     table.decimal("precio", 10, 2).notNullable();

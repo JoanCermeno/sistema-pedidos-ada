@@ -47,7 +47,7 @@ async function routes(fastify, options) {
   fastify.post("/usuario", addUser);
 
   //producto
-  fastify.get("/producto", { preHandler: authMiddleware }, allProductos);
+  fastify.get("/productos", { preHandler: authMiddleware }, allProductos);
 
   // AGREGAR VARIOS PRODUCTOS DE UNA SOLA VEZ
   fastify.post("/productos", { preHandler: authMiddleware }, addProductosFrom);

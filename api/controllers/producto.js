@@ -2,9 +2,19 @@ import Producto from "../models/Producto.js";
 
 export default (fastify) => ({
   allProductos: async (request, reply) => {
-    const modelProducto = new Producto(fastify);
-    const products = await modelProducto.obtenerTodos();
-    return reply.send(products);
+    //Instanciamos un objeto de el modelo producto
+    const misProductos = new Producto(fastify);
+
+    const { page = 1, limit = 10 } = request.query; // Página actual y límite por página
+    const offset = (page - 1) * limit;
+
+    try {
+      const productos = await misProductos.obtenerTodos(limit, offset, page);
+      return productos;
+    } catch (error) {
+      console.log(error);
+      reply.status(500).send({ error: "Error obteniendo los productos" });
+    }
   },
   addProductosFrom: async (request, reply) => {
     // valirdar el body para ver si nos estn pasando un objeto de elmentos de productos

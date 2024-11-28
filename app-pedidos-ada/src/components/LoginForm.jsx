@@ -8,9 +8,11 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/auth", {
+      const response = await fetch(`${apiUrl}/auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -25,8 +27,8 @@ const LoginForm = () => {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token);
-      navigate("/home"); // Redirige al Home
+      localStorage.setItem("token", `Bearer ${data.token}`);
+      navigate("/dashboard"); // Redirige al Home
     } catch (error) {
       console.error(error.message);
     }
@@ -54,7 +56,7 @@ const LoginForm = () => {
             <input
               type="password"
               className="input input-bordered w-full"
-              placeholder="••••••••"
+              placeholder="Clave"
               value={clave}
               onChange={(e) => setClave(e.target.value)}
             />
