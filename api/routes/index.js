@@ -35,7 +35,8 @@ async function routes(fastify, options) {
   const { autenticarUsuario, addUser } = userControllers(fastify);
   const { obtenerClientes } = clienteController(fastify);
   const { obtenerPedidos } = pedidoController(fastify);
-  const { allProductos, addProductosFrom } = productoCOntroller(fastify);
+  const { allProductos, addProductosFrom, addProducto } =
+    productoCOntroller(fastify);
   const { hi } = helloController(fastify);
 
   //rutas
@@ -51,7 +52,8 @@ async function routes(fastify, options) {
 
   // AGREGAR VARIOS PRODUCTOS DE UNA SOLA VEZ
   fastify.post("/productos", { preHandler: authMiddleware }, addProductosFrom);
-
+  //AGREGAR UN SOLO PRODUCTO
+  fastify.post("/producto", { preHandler: authMiddleware }, addProducto);
   //clientes
   fastify.get("/cliente", { preHandler: authMiddleware }, obtenerClientes);
 

@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 localhost+3-key.pem
 localhost+3.pem
+*.db
+
