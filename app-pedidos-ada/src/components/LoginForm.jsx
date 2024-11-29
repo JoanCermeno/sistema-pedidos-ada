@@ -30,6 +30,7 @@ const LoginForm = () => {
       localStorage.setItem("token", `Bearer ${data.token}`);
       navigate("/dashboard"); // Redirige al Home
     } catch (error) {
+      setError("Disculpa algo salio mal no hay conexion con el servidor....");
       console.error(error.message);
     }
   };

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
-const BarcodeScanner = () => {
+const BarcodeScanner = ({ onCodigoEscaneado }) => {
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef(null);
 
@@ -25,7 +25,7 @@ const BarcodeScanner = () => {
     scanner.render(
       (decodedText) => {
         console.log("Código escaneado:", decodedText);
-        alert(`Código escaneado: ${decodedText}`);
+        onCodigoEscaneado(decodedText);
         stopScanner(scanner);
       },
       (error) => {
@@ -47,7 +47,7 @@ const BarcodeScanner = () => {
     <div className="text-center">
       <button
         onClick={startScanner}
-        className={`btn ${isScanning ? "btn-disabled" : "btn-primary"}`}
+        className={`btn ${isScanning ? "btn-disabled" : "btn-neutral"}`}
         disabled={isScanning}
       >
         Abrir Cámara

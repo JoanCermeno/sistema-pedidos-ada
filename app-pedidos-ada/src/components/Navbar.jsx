@@ -25,7 +25,9 @@ const Navbar = () => {
             </svg>
           </label>
         </div>
-        <div className="mx-2 flex-1 px-2">Navbar Title</div>
+        <div className="mx-2 flex-1 fs-5 px-2 font-extrabold">
+          System pedido y productos ADA
+        </div>
         <div className="hidden flex-none lg:block">
           <ul className="menu menu-horizontal">
             {/* Navbar menu content here */}
