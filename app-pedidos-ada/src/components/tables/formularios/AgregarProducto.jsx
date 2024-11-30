@@ -123,13 +123,13 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                   placeholder="Ejemplo. Caja de 100 unidades"
                 />
               </div>
-              <div className="form-control mb-2 flex flex-row justify-between">
-                <div className="flex flex-row">
+              <div className="form-control mb-2 flex flex-row justify-between flex-wrap">
+                <div className="flex flex-col ">
                   <label className="label">Precio ($)</label>
                   <input
                     type="number"
                     name="precio"
-                    className="input input-bordered max-w-32"
+                    className="input input-bordered"
                     value={producto.precio}
                     onChange={handleChange}
                     required
@@ -137,12 +137,12 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                   />
                 </div>
 
-                <div className="flex flex-row">
+                <div className="flex flex-col ">
                   <label className="label">Stock</label>
                   <input
                     type="number"
                     name="stock"
-                    className="input input-bordered max-w-32"
+                    className="input input-bordered"
                     value={producto.stock}
                     onChange={handleChange}
                     required
@@ -152,7 +152,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
               </div>
 
               <div className="modal-action flex flex-row justify-start">
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary ">
                   Guardar
                 </button>
                 <button

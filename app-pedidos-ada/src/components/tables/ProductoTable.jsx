@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AgregarProducto from "./formularios/AgregarProducto";
 import BarcodeScanner from "../BarcodeScanner";
 import Swal from "sweetalert2";
+import ImportarProductos from "./ImportarProductos";
 const ProductosTable = () => {
   const [productos, setProductos] = useState([]);
   const [page, setPage] = useState(1);
@@ -81,6 +82,7 @@ const ProductosTable = () => {
         <div className="flex flex-row grow gap-2 items-center">
           <AgregarProducto onProductoAgregado={agregarProductoALaTabla} />
           <BarcodeScanner onCodigoEscaneado={handleCodigoEscaneado} />
+          <button>Subir un listado de productos</button>
           <input
             type="text"
             className="input input-bordered input-sm w-full max-w-xs"
@@ -89,7 +91,6 @@ const ProductosTable = () => {
           />
         </div>
       </section>
-
       <div className="overflow-x-auto ">
         <table className="table w-full table-sm table-zebra table-pin-rows overflow-auto">
           <thead>
