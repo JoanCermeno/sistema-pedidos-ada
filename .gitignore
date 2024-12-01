@@ -27,3 +27,4 @@ localhost+3.pem
 api/db/dev.db
 
 *.db
+api/db/dev.db
