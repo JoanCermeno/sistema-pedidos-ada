@@ -9,7 +9,7 @@ const ProductosTable = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [totalProductos, setTotalProductos] = useState("0");
-
+  const [modalSubirProductos, setModalSubirProductos] = useState(false);
   const limit = 20; // Cantidad de productos por página
   //solicitar a la base de datos
   const fetchProductos = async () => {
@@ -68,9 +68,12 @@ const ProductosTable = () => {
     setSearchTerm(codigo);
   };
 
+  const abrirModal = () => setModalSubirProductos(true);
+  const cerrarModal = () => setModalSubirProductos(false);
+
   return (
     <div className="container mx-auto">
-      <section className="fluid border p-5 rounded">
+      <section className="fluid p-5 rounded">
         {/* titulo de la tabla */}
         <div className="flex flex-row gap-1">
           <h1 className="text-2xl font-bold text-left  mb-4">Productos</h1>
@@ -79,16 +82,40 @@ const ProductosTable = () => {
           </small>
         </div>
         {/* controles de la tabla filtros busqueda etc */}
-        <div className="flex flex-row grow gap-2 items-center">
-          <AgregarProducto onProductoAgregado={agregarProductoALaTabla} />
-          <BarcodeScanner onCodigoEscaneado={handleCodigoEscaneado} />
-          <button>Subir un listado de productos</button>
+        <div className="flex  flex-col md:flex-row lg:flex-row gap-2 lg:items-center">
+          <div className="flex flex-row gap-2 flex-wrap flex-1">
+            <AgregarProducto onProductoAgregado={agregarProductoALaTabla} />
+            <BarcodeScanner onCodigoEscaneado={handleCodigoEscaneado} />
+            <button className="btn btn-neutral" onClick={abrirModal}>
+              Subir un listado de productos
+            </button>
+          </div>
           <input
             type="text"
-            className="input input-bordered input-sm w-full max-w-xs"
+            className="input input-bordered  input-sm "
             placeholder="Buscar "
             onChange={buscarPor}
           />
+          {modalSubirProductos && (
+            <div className="modal modal-open">
+              <div className="modal-box relative">
+                {/* Botón para cerrar el modal */}
+                <button
+                  onClick={cerrarModal}
+                  className="btn btn-ghost  absolute right-2 bottom-2"
+                >
+                  Cancelar
+                </button>
+
+                {/* Componente dentro del modal */}
+                <h2 className="text-2xl  text-center">
+                  Importar lista de productos desde un archivo
+                </h2>
+                <small>solo puedes subir .csv</small>
+                <ImportarProductos></ImportarProductos>
+              </div>
+            </div>
+          )}
         </div>
       </section>
       <div className="overflow-x-auto ">

@@ -44,7 +44,7 @@ const BarcodeScanner = ({ onCodigoEscaneado }) => {
   };
 
   return (
-    <div className="text-center">
+    <div className="">
       <button
         onClick={startScanner}
         className={`btn ${isScanning ? "btn-disabled" : "btn-neutral"}`}

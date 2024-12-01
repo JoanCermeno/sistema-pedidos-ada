@@ -31,11 +31,23 @@ export default (fastify) => ({
     }
   },
   addProductosFrom: async (request, reply) => {
-    // valirdar el body para ver si nos estn pasando un objeto de elmentos de productos
-    if (!request.body || typeof request.body !== "object") {
-      return reply.status(400).send({ error: "Body no válido" });
+    const modelProducto = new Producto(fastify);
+    const productos = request.body;
+
+    // Valida que sea un array
+    if (!Array.isArray(productos)) {
+      return reply
+        .status(400)
+        .send({ error: "El formato de datos es incorrecto" });
     }
-    return "Requiero un archivo de datos";
+
+    try {
+      const resultado = await modelProducto.addListOfProduct(productos);
+      reply.status(201).send({ message: resultado });
+    } catch (error) {
+      console.log("error al intentar insertar productos desde el arrego");
+      reply.status(500).send({ message: resultado });
+    }
   },
   addProducto: async (request, reply) => {
     const modelProducto = new Producto(fastify);

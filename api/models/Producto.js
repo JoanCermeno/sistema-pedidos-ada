@@ -41,7 +41,22 @@ class Producto {
   }
 
   async addListOfProduct(listaProducto) {
-    return listaProducto;
+    try {
+      // Procesar cada producto (por ejemplo, guardarlos en la base de datos)
+      for (const producto of listaProducto) {
+        // Aquí puedes usar Knex para insertar los productos en tu base de datos
+        await this.knex("productos").insert({
+          nombre: producto.nombre,
+          descripcion: producto.descripcion,
+          precio: producto.precio,
+        });
+      }
+
+      return "productos Importado con exito";
+    } catch (error) {
+      console.error("Error guardando productos:", error);
+      return "error al importar productos";
+    }
   }
 
   async addPorducto(nuevoProducto) {
