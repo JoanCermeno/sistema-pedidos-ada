@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import BarcodeScanner from "./../../BarcodeScanner"; // Componente del lector de código de barras
+import BarcodeScanner from "../../BarcodeScanner"; // Componente del lector de código de barras
 import Swal from "sweetalert2";
 
 const AgregarProducto = ({ onProductoAgregado }) => {
@@ -20,6 +20,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const apiUrl = import.meta.env.VITE_API_URL;
     try {
       const token = localStorage.getItem("token");
@@ -69,7 +70,10 @@ const AgregarProducto = ({ onProductoAgregado }) => {
 
   return (
     <div>
-      <button className="btn btn-primary" onClick={() => setMostrarModal(true)}>
+      <button
+        className="btn btn-sm btn-primary"
+        onClick={() => setMostrarModal(true)}
+      >
         Nuevo
       </button>
 

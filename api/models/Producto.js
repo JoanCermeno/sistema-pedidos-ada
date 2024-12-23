@@ -76,6 +76,27 @@ class Producto {
       return error;
     }
   }
+
+  async actualiza(camposAActualizar, id) {
+    try {
+      const resultado = await this.knex("productos")
+        .where({ id })
+        .update(camposAActualizar);
+      return resultado;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+  async borrar(id) {
+    try {
+      const resultado = await this.knex("productos").where({ id }).del();
+      return resultado;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
 }
 
 export default Producto;

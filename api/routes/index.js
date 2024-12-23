@@ -4,7 +4,7 @@ import clienteController from "../controllers/cliente.js";
 import pedidoController from "../controllers/pedido.js";
 import productoCOntroller from "../controllers/producto.js";
 import helloController from "../controllers/hello.js";
-
+import Test from "../models/Test.js";
 async function routes(fastify, options) {
   //middelwares para proteger las rutas
   async function authMiddleware(request, reply) {
@@ -35,8 +35,13 @@ async function routes(fastify, options) {
   const { autenticarUsuario, addUser } = userControllers(fastify);
   const { obtenerClientes } = clienteController(fastify);
   const { obtenerPedidos } = pedidoController(fastify);
-  const { allProductos, addProductosFrom, addProducto } =
-    productoCOntroller(fastify);
+  const {
+    allProductos,
+    addProductosFrom,
+    addProducto,
+    editProducto,
+    deleteProducto,
+  } = productoCOntroller(fastify);
   const { hi } = helloController(fastify);
 
   //rutas
@@ -54,11 +59,36 @@ async function routes(fastify, options) {
   fastify.post("/productos", { preHandler: authMiddleware }, addProductosFrom);
   //AGREGAR UN SOLO PRODUCTO
   fastify.post("/producto", { preHandler: authMiddleware }, addProducto);
+  fastify.put("/producto", { preHandler: authMiddleware }, editProducto);
+  fastify.delete(
+    "/productos/:id",
+    { preHandler: authMiddleware },
+    deleteProducto
+  );
+
   //clientes
   fastify.get("/cliente", { preHandler: authMiddleware }, obtenerClientes);
 
   //pedidos
   fastify.get("/pedido", { preHandler: authMiddleware }, obtenerPedidos);
+
+  // prueba
+  fastify.get("/clientesOf", async (request, reply) => {
+    const clientesModelTest = new Test(fastify);
+    const id = request.query.id;
+    const alldata = await clientesModelTest.getClientesOfmaster(id);
+
+    console.log(id);
+    reply.send(alldata);
+  });
+  fastify.post("/clientesOf", async (request, reply) => {
+    const listaPersonasToSave = request.body;
+    const updateRegister = new Test(fastify);
+    console.log(listaPersonasToSave);
+    const result = await updateRegister.guardarClientes(listaPersonasToSave);
+    console.log(result);
+    reply.send(listaPersonasToSave);
+  });
 }
 
 export default routes;

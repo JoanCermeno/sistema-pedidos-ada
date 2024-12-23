@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "./Navbar";
 import MainContent from "./MainContent";
-import ProductoTable from "./tables/ProductoTable";
+import ProductoTable from "./productos/ProductoTable";
 
 const Sidebar = () => {
   return (

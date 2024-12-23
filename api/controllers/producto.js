@@ -85,4 +85,51 @@ export default (fastify) => ({
         .send({ error: "Error al agregar el producto en la base de datos" });
     }
   },
+
+  editProducto: async (request, reply) => {
+    const { id, nombre, descripcion, precio, codigoBarras, stock } =
+      request.body;
+    const camposAActualizar = {};
+    if (id !== undefined) camposAActualizar.id = id;
+    if (nombre !== undefined) camposAActualizar.nombre = nombre;
+    if (descripcion !== undefined) camposAActualizar.descripcion = descripcion;
+    if (precio !== undefined) camposAActualizar.precio = precio;
+    if (codigoBarras !== undefined)
+      camposAActualizar.codigoBarras = codigoBarras;
+    if (stock !== undefined) camposAActualizar.stock = stock;
+
+    if (Object.keys(camposAActualizar).length === 0) {
+      return reply
+        .code(400)
+        .send({ error: "No se enviaron campos para actualizar" });
+    }
+    // mandamos a actualizar
+    const modelProducto = new Producto(fastify);
+    console.log("campos a actualizar: ", camposAActualizar);
+
+    try {
+      const resultadoActualizacion = await modelProducto.actualiza(
+        camposAActualizar,
+        id
+      );
+      //SI todo ok se manda un 1
+      reply.code(200).send(resultadoActualizacion);
+    } catch (error) {
+      console.log(error);
+      reply.code(500).send({
+        message: "Ocurrio un error al intentar actualizaar este producto",
+      });
+    }
+  },
+  deleteProducto: async (request, reply) => {
+    const { id } = request.params;
+    const ModelProducto = new Producto(fastify);
+    try {
+      const resultado = await ModelProducto.borrar(id);
+      return reply.code(200).send(resultado);
+    } catch (error) {
+      console.log(error);
+      return reply.code(500).send(error);
+    }
+  },
 });
