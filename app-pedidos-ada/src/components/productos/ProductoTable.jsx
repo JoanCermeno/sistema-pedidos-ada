@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import AgregarProducto from "./formularios/AgregarProducto";
@@ -31,7 +32,7 @@ const ProductosTable = () => {
     } catch (error) {
       Swal.fire({
         title: "Error",
-        text: "Hubo un problema al cargar los productos",
+        text: `error al cargar los productos ${error}`,
         icon: "error",
         confirmButtonText: "Aceptar",
       });

@@ -12,8 +12,9 @@ export const obtenerProductos = async (page, limit, searchTerm, token) => {
     }
   );
   console.log(response.status);
-  if (response.status == 401) {
-    return "no autenticado";
+  if (response.status === 401) {
+    console.warn("No tienes permisos para acceder a este recurso");
+    throw new Error("No tienes permisos para acceder a este recurso");
   }
   return response.json();
 };

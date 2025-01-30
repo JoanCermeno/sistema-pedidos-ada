@@ -23,15 +23,14 @@ const LoginForm = () => {
       if (!response.ok) {
         const data = await response.json();
         setError(data.message);
-        throw new Error("Error en la autenticación");
+        throw new Error("Usuario o contraseña incorrectos");
       }
 
       const data = await response.json();
       localStorage.setItem("token", `Bearer ${data.token}`);
-      navigate("/dashboard"); // Redirige al Home
+      navigate("/"); // Redirige al Home
     } catch (error) {
-      setError("Disculpa algo salio mal no hay conexion con el servidor....");
-      console.error(error.message);
+      setError(error.message);
     }
   };
 
@@ -62,8 +61,8 @@ const LoginForm = () => {
               onChange={(e) => setClave(e.target.value)}
             />
           </div>
-          {error && <div className="text-red-500 text-sm">{error}</div>}
-          <button type="submit" className="btn btn-primary w-full">
+          {error && <div className="animate-shake  text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2">{error}</div>}
+          <button type="submit" className="btn ease-in-out btn-primary w-full shadow-md hover:shadow-lg shadow-primary-500/50 hover:shadow-primary-400/50 duration-300 transition-all">
             Entrar
           </button>
         </form>
