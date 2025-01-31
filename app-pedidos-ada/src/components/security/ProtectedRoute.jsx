@@ -12,22 +12,30 @@ const ProtectedRoute = () => {
 
       if (!token) {
         // Si no hay token, redirige al login
-        alert("No hay token, redirigiendo al login");
         navigate("/login");
         return;
       }
-      console.log("Token:", token);
       try {
         // Verifica el token con el backend
-        const response = await axios.get("/api/validate-token", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/validateTokenSession`, {
           headers: {
             Authorization: `${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
           },
+          method: "POST",
+          body: JSON.stringify({ token }),
+        
         });
 
         if (response.status === 200) {
+          console.log("Token is valid");
           setIsAuthenticated(true); // El token es válido
         } else {
+          console.warn("Token is not valid");
+          console.log("Response:", response);
           localStorage.removeItem("token"); // Elimina el token inválido
           navigate("/login"); // Redirige al login
         }

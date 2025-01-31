@@ -5,7 +5,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleHomeClick = () => {
-    navigate("/dashboard");
+    navigate("/");
   };
 
   return (

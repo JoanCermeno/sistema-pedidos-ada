@@ -58,6 +58,13 @@ export const up = async function (knex) {
       .onDelete("CASCADE"); // Relación con productos
     table.integer("cantidad").notNullable(); // Cantidad de este producto en el pedido
   });
+
+  // tasa del dolar en cada día
+  await knex.schema.createTable("dolar_today", (table) => {
+    table.increments("id").primary();
+    table.date("fecha").notNullable();
+    table.decimal("tasa", 10, 2).notNullable();
+  });
 };
 
 export const down = async function (knex) {

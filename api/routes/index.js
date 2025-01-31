@@ -1,10 +1,13 @@
 import jwt from "jsonwebtoken"; // Importamos JSON Web Token
+import validarToken from "../controllers/validarTokenSession.js";
 import userControllers from "../controllers/user.js";
 import clienteController from "../controllers/cliente.js";
 import pedidoController from "../controllers/pedido.js";
 import productoCOntroller from "../controllers/producto.js";
+import precioController from "../controllers/precio.js";
 import helloController from "../controllers/hello.js";
 import Test from "../models/Test.js";
+
 async function routes(fastify, options) {
   //middelwares para proteger las rutas
   async function authMiddleware(request, reply) {
@@ -25,9 +28,9 @@ async function routes(fastify, options) {
       return decoded;
     } catch (error) {
       console.log(error);
-      reply.status(401).send({ message: "Token inválido o expirado" });
+      return reply.status(401).send({ message: "Token inválido o expirado" });
 
-      throw new Error(error);
+     
     }
   }
 
@@ -43,12 +46,15 @@ async function routes(fastify, options) {
     deleteProducto,
   } = productoCOntroller(fastify);
   const { hi } = helloController(fastify);
+  const { validateTokenSession } = validarToken(fastify);
+  const { actualizarPrecio } = precioController(fastify);
 
   //rutas
   fastify.get("/", hi);
 
   //auth
   fastify.post("/auth", autenticarUsuario);
+  fastify.post("/validateTokenSession", validateTokenSession);
 
   fastify.post("/usuario", addUser);
 
@@ -72,6 +78,11 @@ async function routes(fastify, options) {
   //pedidos
   fastify.get("/pedido", { preHandler: authMiddleware }, obtenerPedidos);
 
+  // precios del día
+  fastify.post("/precio", { preHandler: authMiddleware }, actualizarPrecio);
+
+
+
   // prueba
   fastify.get("/clientesOf", async (request, reply) => {
     const clientesModelTest = new Test(fastify);
@@ -84,10 +95,14 @@ async function routes(fastify, options) {
   fastify.post("/clientesOf", async (request, reply) => {
     const listaPersonasToSave = request.body;
     const updateRegister = new Test(fastify);
-    console.log(listaPersonasToSave);
     const result = await updateRegister.guardarClientes(listaPersonasToSave);
     console.log(result);
-    reply.send(listaPersonasToSave);
+    reply.send(true);
+  });
+  fastify.post("/clientesOfTemporal", async (request, reply) => {
+    const listaPersonasToSave = request.body;
+    console.log(listaPersonasToSave);
+    reply.send("hola");
   });
 }
 
