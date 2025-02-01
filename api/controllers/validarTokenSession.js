@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 export default (fastify) => ({
   validateTokenSession: async (request, reply) => {
 
@@ -24,7 +26,7 @@ export default (fastify) => ({
 
       reply.status(200).send({ message: "Token validado" });
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       return reply.status(401).send({ message: "Token inválido o expirado" });
     }
   },

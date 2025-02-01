@@ -6,10 +6,11 @@ const LoginForm = () => {
   const [clave, setClave] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     const apiUrl = import.meta.env.VITE_API_URL;
-
+    setLoading(true);
     e.preventDefault();
     try {
       const response = await fetch(`${apiUrl}/auth`, {
@@ -28,10 +29,18 @@ const LoginForm = () => {
 
       const data = await response.json();
       localStorage.setItem("token", `Bearer ${data.token}`);
-      navigate("/"); // Redirige al Home
+      console.log("mandando al home")
     } catch (error) {
       setError(error.message);
     }
+    finally {
+      setLoading(false);
+      navigate("/"); // Redirige al Home
+    }
+  };
+
+  const hiddenErrorMs = () => {
+    setError(null);
   };
 
   return (
@@ -61,9 +70,10 @@ const LoginForm = () => {
               onChange={(e) => setClave(e.target.value)}
             />
           </div>
-          {error && <div className="animate-shake  text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2">{error}</div>}
-          <button type="submit" className="btn ease-in-out btn-primary w-full shadow-md hover:shadow-lg shadow-primary-500/50 hover:shadow-primary-400/50 duration-300 transition-all">
-            Entrar
+          {error && <div onClick={hiddenErrorMs}  className="animate-shake hover:cursor-pointer    text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2">{error}</div>}
+          <button type="submit" className="btn ease-in-out btn-primary w-full shadow-md hover:scale-110 hover:shadow-2xl hover:shadow-primary-900/10 hover:drop-shadow-2xl duration-300 transition-all">
+            Entrar {loading && <span class="loading loading-spinner loading-sm"></span>
+            }
           </button>
         </form>
       </div>
