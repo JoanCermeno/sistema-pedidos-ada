@@ -19,6 +19,9 @@ export default {
           error: "#4B5563", // gris oscuro
         },
       },
+      "dim",
+      "nord",
+      "bumblebee"
     ],
   },
   plugins: [require("daisyui")],

@@ -2,7 +2,7 @@ import React from "react";
 ///esto recibe un id del elemento de una talba mas las opciones
 const DropdownActions = ({ id, opciones }) => {
   return (
-    <div className="dropdown">
+    <div className="dropdown dropdown-bottom dropdown-left">
       {/* Clase 'btn-sm' para reducir el tamaño y 'btn-ghost' para un estilo más limpio */}
       <div tabIndex={0} role="button" className="btn btn-sm btn-ghost m-1">
         •••

@@ -29,13 +29,13 @@ const LoginForm = () => {
 
       const data = await response.json();
       localStorage.setItem("token", `Bearer ${data.token}`);
-      console.log("mandando al home")
+      console.log("mandando al home");
+      navigate("/");
     } catch (error) {
+      console.log(error);
       setError(error.message);
-    }
-    finally {
+    } finally {
       setLoading(false);
-      navigate("/"); // Redirige al Home
     }
   };
 
@@ -45,35 +45,51 @@ const LoginForm = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md p-8 shadow-lg rounded-lg">
-        <h1 className="text-2xl font-bold mb-4 text-center">
-          Sistemas de pedido ADA
+      <div className="w-full max-w-md p-8 shadow-xl rounded-lg bg-slate-50">
+        <h1 className="text-2xl font-bold mb-4 text-center text-orange-950">
+          Sistema ADA
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium">Usuario</label>
+            <label className="block mb-2 text-sm font-medium text-gray-600">
+              Usuario
+            </label>
             <input
               type="text"
-              className="input input-bordered w-full"
+              className="input input-bordered w-full bg-gray-50 text-orange-950 hadow-sm"
               placeholder="Nombre de usuario"
               value={usuario}
               onChange={(e) => setUsuario(e.target.value)}
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium">Clave</label>
+            <label className="block mb-2 text-sm font-medium text-gray-600">
+              Clave
+            </label>
             <input
               type="password"
-              className="input input-bordered w-full"
+              className="input input-bordered w-full bg-gray-50  shadow-sm text-orange-950"
               placeholder="Clave"
               value={clave}
               onChange={(e) => setClave(e.target.value)}
             />
           </div>
-          {error && <div onClick={hiddenErrorMs}  className="animate-shake hover:cursor-pointer    text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2">{error}</div>}
-          <button type="submit" className="btn ease-in-out btn-primary w-full shadow-md hover:scale-110 hover:shadow-2xl hover:shadow-primary-900/10 hover:drop-shadow-2xl duration-300 transition-all">
-            Entrar {loading && <span class="loading loading-spinner loading-sm"></span>
-            }
+          {error && (
+            <div
+              onClick={hiddenErrorMs}
+              className="animate-shake hover:cursor-pointer    text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2"
+            >
+              {error}
+            </div>
+          )}
+          <button
+            type="submit"
+            className="btn  btn-accent w-full shadow-md hover:shadow-orange-950 font-bold text-md "
+          >
+            Entrar
+            {loading && (
+              <span class="loading loading-spinner loading-sm"></span>
+            )}
           </button>
         </form>
       </div>

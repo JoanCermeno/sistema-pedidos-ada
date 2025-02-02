@@ -9,7 +9,7 @@ import ProtectedRoute from "./components/security/ProtectedRoute";
 
 const App = () => {
   return (
-    <Routes>
+    <Routes >
       <Route path="/login" element={<LoginForm />} />
       {/* Ruta protegida */}
       <Route element={<ProtectedRoute />}>

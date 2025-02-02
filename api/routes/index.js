@@ -48,6 +48,7 @@ async function routes(fastify, options) {
   const { hi } = helloController(fastify);
   const { validateTokenSession } = validarToken(fastify);
   const { actualizarPrecio } = precioController(fastify);
+  const { obtenerPrecio } = precioController(fastify);
 
   //rutas
   fastify.get("/", hi);
@@ -79,8 +80,9 @@ async function routes(fastify, options) {
   fastify.get("/pedido", { preHandler: authMiddleware }, obtenerPedidos);
 
   // precios del día
-  fastify.post("/precio", { preHandler: authMiddleware }, actualizarPrecio);
-
+  fastify.post("/tasaDolar", { preHandler: authMiddleware }, actualizarPrecio);
+  //obtener el precio del día
+  fastify.get("/tasaDolar", { preHandler: authMiddleware }, obtenerPrecio);
 
 
   // prueba

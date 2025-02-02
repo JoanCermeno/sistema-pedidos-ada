@@ -23,6 +23,7 @@ export const up = async function (knex) {
     table.string("nombre").notNullable();
     table.text("descripcion");
     table.decimal("precio", 10, 2).notNullable();
+    table.decimal("precio_bs", 10, 2).defaultTo(0); // Precio en bolivares
     table.integer("stock").defaultTo(0); // Cantidad disponible
     table.timestamps(true, true);
   });
@@ -63,6 +64,7 @@ export const up = async function (knex) {
   await knex.schema.createTable("dolar_today", (table) => {
     table.increments("id").primary();
     table.date("fecha").notNullable();
+    table.timestamp('created_at').defaultTo(knex.fn.now());
     table.decimal("tasa", 10, 2).notNullable();
   });
 };
@@ -74,4 +76,5 @@ export const down = async function (knex) {
   await knex.schema.dropTableIfExists("productos");
   await knex.schema.dropTableIfExists("clientes");
   await knex.schema.dropTableIfExists("usuarios");
+  await knex.schema.dropTableIfExists("dolar_today");
 };

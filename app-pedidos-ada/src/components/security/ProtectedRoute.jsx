@@ -30,7 +30,7 @@ const ProtectedRoute = () => {
         
         });
 
-        if (response.status === 200) {
+        if (response.status === 200) { 
           console.log("Token is valid");
           setIsAuthenticated(true); // El token es válido
         } else {

@@ -23,10 +23,10 @@ export default (fastify) => ({
         console.log("Token expirado");
         throw new Error("Token expirado");
       }
-
+      console.log("Token validado");
       reply.status(200).send({ message: "Token validado" });
     } catch (error) {
-      //console.log(error);
+      console.log(error);
       return reply.status(401).send({ message: "Token inválido o expirado" });
     }
   },

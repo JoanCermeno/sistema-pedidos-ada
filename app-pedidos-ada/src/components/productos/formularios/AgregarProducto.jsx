@@ -133,6 +133,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                   <input
                     type="number"
                     name="precio"
+                    min={0}
                     className="input input-bordered"
                     value={producto.precio}
                     onChange={handleChange}
@@ -146,6 +147,8 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                   <input
                     type="number"
                     name="stock"
+                    limit={10000}
+                    min={0}
                     className="input input-bordered"
                     value={producto.stock}
                     onChange={handleChange}

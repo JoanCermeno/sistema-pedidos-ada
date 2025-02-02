@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import AgregarProducto from "./formularios/AgregarProducto";
@@ -123,14 +122,16 @@ const ProductosTable = () => {
         </div>
       </section>
       <div>
-        <table className="table w-full table-sm border table-pin-rows overflow-auto">
+      <div className="overflow-y-hidden pb-20 rounded-box border border-base-content/5 bg-base-100 shadow-2xl">
+
+          <table className="table table-pin-rows">
           <thead>
-            <tr>
-              <th>ID</th>
+            <tr className=" bg-orange-100 text-orange-950 text-md font-bold tracking-wide">
+
               <th>Nombre</th>
               <th>Descripción</th>
               <th>Código de barras</th>
-              <th>Precio</th>
+              <th>Precio $ / Bs</th>
               <th>Stock</th>
               <th>Opciones</th>
             </tr>
@@ -139,11 +140,15 @@ const ProductosTable = () => {
             {productos.length > 0 ? (
               productos.map((producto) => (
                 <tr key={producto.id}>
-                  <td>{producto.id}</td>
+             
                   <td>{producto.nombre}</td>
                   <td>{producto.descripcion}</td>
                   <td>{producto.codigo_barra}</td>
-                  <td>{producto.precio}</td>
+                  <td className="flex flex-col gap-1"> {producto.precio}$ 
+                    <small className="text-sm text-gray-500">
+                      {producto.precio_bs}Bs.
+                    </small>
+                  </td>
                   <td>{producto.stock}</td>
                   <td>
                     <DropdownActions
@@ -165,12 +170,22 @@ const ProductosTable = () => {
             ) : (
               <tr>
                 <td colSpan="7" className="text-center">
-                  No hay productos disponibles
+                  Puedes agregar un nuevo producto, en estos momentos no hay productos en el inventario
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        <tfoot>
+          <tr>
+            <td colSpan="7" className="text-center">
+              <small className="text-sm text-gray-500">
+                {totalProductos} productos en total
+              </small>
+            </td> 
+          </tr>
+        </tfoot>
+        </div>
         {/* Modal de edición */}
         <Modal
           titulo="Editar Producto"
@@ -183,7 +198,7 @@ const ProductosTable = () => {
           ></FormEditaPorducto>
         </Modal>
       </div>
-      <div className="flex justify-center items-center mt-4">
+      <div className="flex justify-center items-center my-10">
         <button
           className="btn btn-sm mr-2"
           disabled={page === 1}
@@ -205,14 +220,15 @@ const ProductosTable = () => {
       {modalSubirProductos && (
         <div className="modal modal-open">
           <div className="modal-box relative">
-            <button
-              onClick={() => setModalSubirProductos(false)}
-              className="btn btn-ghost absolute right-2 bottom-2"
-            >
-              Cancelar
-            </button>
+          <button
+            onClick={() => setModalSubirProductos(false)}
+            className="btn btn-secondary btn-sm"
+          >Cerrar</button>
+
             <ImportarProductos />
+
           </div>
+      
         </div>
       )}
     </div>

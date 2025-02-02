@@ -2,9 +2,11 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
 import Swal from "sweetalert2";
-
+import { useNavigate } from "react-router-dom";
 const ImportarProductos = () => {
   const [productos, setProductos] = useState([]);
+  const navigate = useNavigate(); // Hook para redirigir
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -44,7 +46,7 @@ const ImportarProductos = () => {
     console.log(productos);
   };
 
-  /// funcion para inviar la lista de productos
+  /// funcion para enviar la lista de productos
 
   const enviarProductos = async () => {
     if (productos.length === 0) {
@@ -88,6 +90,12 @@ const ImportarProductos = () => {
         icon: "success",
         title: "¡Éxito!",
         text: "Productos cargados.",
+        
+      }).then((result) => {
+        // Redirigir después de que el usuario haga clic en "Aceptar"
+        if (result.isConfirmed) {
+          navigate("/inventario"); 
+        }
       });
     } catch (error) {
       console.error("Error enviando los productos:", error);
@@ -102,32 +110,38 @@ const ImportarProductos = () => {
   };
 
   return (
-    <>
-      <label className="form-control w-full max-w-sm relative">
+    <div className="flex flex-col">
+      <label className="form-control w-full relative text-center ">
+        subir productos de un archivo csv
         <input
           type="file"
           accept=".csv"
-          className="file-input max-w-36"
+          className="file-input input-sm w-full"
           onChange={handleFileChange}
         />
       </label>
 
+
       {productos.length > 0 && (
         <>
-          <div className="divider">Se han detectado todos estos productos</div>
-          <button className="btn" onClick={enviarProductos}>
-            Confirmar productos
+          <div className="divider">Se han leido los siguientes productos ⬇️</div>
+          <section className="flex flex-col gap-2 overflow-auto max-h-36">
+          <ul className="list-disc">
+          {productos.map((producto, index) => (
+           <li key={index}>
+             {producto.nombre} - {producto.descripcion} - ${producto.precio}
+            </li>
+          ))}
+        </ul>
+          </section>
+
+      <button className="btn btn-primary btn-sm shadow-md my-5" onClick={enviarProductos}>
+            Enviar productos
           </button>
         </>
-      )}
-      <ul className="">
-        {productos.map((producto, index) => (
-          <li key={index}>
-            {producto.nombre} - {producto.descripcion} - ${producto.precio}
-          </li>
-        ))}
-      </ul>
-    </>
+      )}  
+    
+    </div>
   );
 };
 

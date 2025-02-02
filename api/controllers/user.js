@@ -24,7 +24,6 @@ export default (fastify) => ({
       // 3. Enviar el token al cliente
       reply.send({ message: "Autenticación exitosa", token });
     } catch (error) {
-      console.log("Error enviando el error de autetnicacion al usuario");
       reply.status(401).send({ message: error.message });
     }
   },
