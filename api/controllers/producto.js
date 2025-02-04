@@ -52,18 +52,14 @@ export default (fastify) => ({
   addProducto: async (request, reply) => {
     const modelProducto = new Producto(fastify);
     try {
-      // Validar si el cuerpo contiene un objeto válido
-      const producto = request.body;
-      if (!producto || typeof producto !== "object") {
-        return reply.status(400).send({ error: "Body no válido" });
-      }
-
       // Validar que los campos requeridos existan
-      const { codigoBarras, descripcion, nombre, precio, stock } = producto;
-      if (!descripcion || !nombre || !precio || !stock) {
-        return reply.status(400).send({
-          error: "Campos requeridos: descripcion, nombre, precio, stock",
-        });
+      const { codigoBarras, descripcion, nombre, precio, precio_bs, stock } = request.body;
+
+      fastify.log.info(request.body);
+
+      if (!descripcion || !nombre || !precio || !stock || !precio_bs) {
+        fastify.log.error("no es valido");
+        throw new Error("Campos requeridos: descripcion, nombre, precio, precio_bs, stock");
       }
 
       // Construyendo el producto a insertar
@@ -72,22 +68,24 @@ export default (fastify) => ({
         descripcion,
         nombre,
         precio: parseFloat(precio), // Asegurarse de que el precio sea un número
+        precio_bs: parseFloat(precio_bs), // Asegurarse de que el precio sea un número
         stock: parseInt(stock, 10), // Asegurarse de que el stock sea un entero
       };
-      const productoAdded = await modelProducto.addPorducto(nuevoProducto);
 
+
+      const productoAdded = await modelProducto.addPorducto(nuevoProducto);
+      fastify.log.info(productoAdded);
       // Retornar la respuesta exitosa
       return reply.status(201).send(productoAdded);
     } catch (error) {
-      console.error("Error al agregar el producto:", error);
       return reply
         .status(500)
-        .send({ error: "Error al agregar el producto en la base de datos" });
+        .send({ error: error.message });
     }
   },
 
   editProducto: async (request, reply) => {
-    const { id, nombre, descripcion, precio, codigoBarras, stock } =
+    const { id, nombre, descripcion, precio, precioBs, codigoBarras, stock } =
       request.body;
     const camposAActualizar = {};
     if (id !== undefined) camposAActualizar.id = id;
@@ -97,6 +95,7 @@ export default (fastify) => ({
     if (codigoBarras !== undefined)
       camposAActualizar.codigoBarras = codigoBarras;
     if (stock !== undefined) camposAActualizar.stock = stock;
+    if(precioBs !== undefined) camposAActualizar.precio_bs = precioBs; 
 
     if (Object.keys(camposAActualizar).length === 0) {
       return reply
@@ -115,9 +114,9 @@ export default (fastify) => ({
       //SI todo ok se manda un 1
       reply.code(200).send(resultadoActualizacion);
     } catch (error) {
-      console.log(error);
+      fastify.log.error(error);
       reply.code(500).send({
-        message: "Ocurrio un error al intentar actualizaar este producto",
+        message: "Ocurrio un error al intentar actualizar este producto",
       });
     }
   },

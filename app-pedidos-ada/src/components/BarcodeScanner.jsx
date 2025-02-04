@@ -47,10 +47,10 @@ const BarcodeScanner = ({ onCodigoEscaneado }) => {
     <div className="">
       <button
         onClick={startScanner}
-        className={`btn btn-sm  ${isScanning ? "btn-disabled" : "btn-neutral"}`}
+        className={`btn btn-sm join-item ${isScanning ? "btn-disabled" : "btn"}`}
         disabled={isScanning}
       >
-        Escaner
+        Escanear
       </button>
 
       {/* Contenedor siempre presente */}
@@ -59,7 +59,7 @@ const BarcodeScanner = ({ onCodigoEscaneado }) => {
       {isScanning && (
         <button
           onClick={() => stopScanner(scannerRef.current)}
-          className="btn btn-secondary mt-4"
+          className="btn btn-info mt-4  "
         >
           Detener Escaner
         </button>

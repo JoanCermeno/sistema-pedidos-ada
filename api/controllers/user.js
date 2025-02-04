@@ -9,7 +9,6 @@ export default (fastify) => ({
     }
     const { user, pass } = request.body;
     const modeloUser = new User(fastify);
-    console.log(request.body);
     try {
       // 1. Autenticamos al usuario con las credenciales
       const usuario = await modeloUser.authUser(user, pass);
@@ -24,6 +23,7 @@ export default (fastify) => ({
       // 3. Enviar el token al cliente
       reply.send({ message: "Autenticación exitosa", token });
     } catch (error) {
+      fastify.log.error(error);
       reply.status(401).send({ message: error.message });
     }
   },

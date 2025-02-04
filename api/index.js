@@ -29,7 +29,16 @@ const httpsOptions = {
 
 // Crear el servidor con HTTPS
 const fastify = Fastify({
-  logger: true,
+   logger: {
+    transport: {
+      target: "pino-pretty", // Usar pino-pretty para logs más legibles
+      options: {
+        colorize: true, // Colorear la salida
+        translateTime: "yyyy-mm-dd HH:MM:ss", // Formato de fecha legible
+        ignore: "pid,hostname", // Ignorar campos innecesarios
+      },
+    },
+  },
   https: httpsOptions,
 });
 

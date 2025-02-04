@@ -6,6 +6,7 @@ import { actualizarProducto } from "./../service/Productos";
 const EditarProducto = ({ productoToEditar, onClose }) => {
   const [mostrarScanner, setMostrarScanner] = useState(true); // Estado para el scanner
   const [producto, setProducto] = useState(productoToEditar);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,7 +18,26 @@ const EditarProducto = ({ productoToEditar, onClose }) => {
     //MAndando a editar
     console.log("MAndado a guardar A EDITAR ES:", producto);
     //llamamos a la api
-
+    setLoading(true);
+    if(loading){
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "warning",
+        title: "Espera un momento, estoy actualizando el producto",
+      });
+      console.log("Estoy cargando");
+      return;
+    }
     const resultado = await actualizarProducto(producto);
     if (resultado == 1) {
       Swal.fire({
@@ -99,10 +119,20 @@ const EditarProducto = ({ productoToEditar, onClose }) => {
             required
             placeholder="$"
           />
+          <label className="label">Precio (Bs)</label>
+          <input
+            type="number"
+            name="precioBs"
+            className="input input-bordered"
+            value={producto.precioBs}
+            onChange={handleChange}
+            required
+            placeholder="$"
+          />
         </div>
 
         <div className="flex flex-col ">
-          <label className="label">Stock</label>
+          <label className="label">Cantidad</label>
           <input
             type="number"
             name="stock"
@@ -110,19 +140,22 @@ const EditarProducto = ({ productoToEditar, onClose }) => {
             value={producto.stock}
             onChange={handleChange}
             required
-            placeholder="unidades"
+            placeholder="100"
           />
         </div>
       </div>
 
       <div className="modal-action flex flex-row justify-start">
-        <button type="submit" className="btn btn-primary ">
+        <button type="submit" className="btn btn-accent">
           Editar
+          {loading && (
+            <span className="loading loading-spinner loading-sm"></span>
+          )}
         </button>
         <button
           type="button"
-          className="btn btn-neutral"
-          onClick={() => setMostrarModal(false)}
+          className="btn btn-gost"
+          onClick={() => onClose()}
         >
           Cancelar
         </button>

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const LoginForm = () => {
   const [usuario, setUsuario] = useState("");
   const [clave, setClave] = useState("");
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -23,8 +23,8 @@ const LoginForm = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.message);
-        throw new Error("Usuario o contraseña incorrectos");
+        console.log(data);
+        throw new Error(data.message);
       }
 
       const data = await response.json();
@@ -32,15 +32,24 @@ const LoginForm = () => {
       console.log("mandando al home");
       navigate("/");
     } catch (error) {
-      console.log(error);
-      setError(error.message);
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: error
+      });
     } finally {
       setLoading(false);
     }
-  };
-
-  const hiddenErrorMs = () => {
-    setError(null);
   };
 
   return (
@@ -74,23 +83,22 @@ const LoginForm = () => {
               onChange={(e) => setClave(e.target.value)}
             />
           </div>
-          {error && (
-            <div
-              onClick={hiddenErrorMs}
-              className="animate-shake hover:cursor-pointer    text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2"
-            >
-              {error}
-            </div>
-          )}
           <button
             type="submit"
             className="btn  btn-accent w-full shadow-md hover:shadow-orange-950 font-bold text-md "
           >
+
             Entrar
             {loading && (
-              <span class="loading loading-spinner loading-sm"></span>
+              <span className="loading loading-spinner loading-sm"></span>
             )}
           </button>
+          <div className="flex flex-col justify-center items-center gap-1 pt-5"> 
+            <small>No tienes cuenta? <a href="/register">Registrate</a></small>
+          <small> Olvidaste tu contraseña? <a href="/resetPassword">Recuperar</a></small>
+
+          </div>
+  
         </form>
       </div>
     </div>

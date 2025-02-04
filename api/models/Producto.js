@@ -75,8 +75,8 @@ class Producto {
         .first();
       return productoAgregado;
     } catch (error) {
-      console.log(error);
-      return error;
+
+      throw error;
     }
   }
 

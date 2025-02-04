@@ -90,7 +90,6 @@ async function routes(fastify, options) {
     const clientesModelTest = new Test(fastify);
     const id = request.query.id;
     const alldata = await clientesModelTest.getClientesOfmaster(id);
-
     console.log(id);
     reply.send(alldata);
   });

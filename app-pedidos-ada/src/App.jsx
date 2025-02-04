@@ -6,6 +6,9 @@ import Inventario from "./components/productos/Inventario";
 import NotFound from "./components/pages/NotFound";
 import UpdatePrices from "./components/precios/UpdatePrices";
 import ProtectedRoute from "./components/security/ProtectedRoute";
+import Sales from "./components/ventas/Sales";
+import TablaVentas from "./components/ventas/TablaVentas";
+
 
 const App = () => {
   return (
@@ -21,7 +24,14 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/precios" element={<UpdatePrices />} />
       </Route>
-
+      {/**Ruta para las facturas */}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/facturar" element={<Sales />} />
+      </Route>
+           {/**Ruta para las ventas */}
+           <Route element={<ProtectedRoute />}>
+        <Route path="/ventas" element={<TablaVentas />} />
+      </Route>
       {/* Ruta 404 - Catch-all para rutas no válidas */}
       <Route path="*" element={<NotFound />} />
     </Routes>
