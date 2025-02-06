@@ -67,6 +67,9 @@ const Factura = ({  productos = [] , onProductosSeleccionados }) => {
   const handleLimpiar = () => {
     onProductosSeleccionados([]);
   };
+  const handleGuardar = () => {
+   
+  };
   return (
     <>
       <div className="w-full flex flex-col gap-4 justify-start items-start p-10">
@@ -195,7 +198,7 @@ const Factura = ({  productos = [] , onProductosSeleccionados }) => {
           <button className="btn btn-sm  " onClick={handleLimpiar}>
             Limpiar
           </button>
-          <button className="btn btn-success btn-sm font-bold text-white ">
+          <button className="btn btn-success btn-sm font-bold text-white " onClick={handleGuardar}>
             Guardar factura
           </button>
         </div>
