@@ -27,6 +27,27 @@ export const up = async function (knex) {
     table.integer("stock").defaultTo(0); // Cantidad disponible
     table.timestamps(true, true);
   });
+  //crear tabla de ventas
+  await knex.schema.createTable("ventas", (table) => {
+    table.increments("id").primary();
+    table.string("nombre_cliente").notNullable();
+    table.string("cedula").notNullable();
+    table.dateTime("fecha").notNullable();
+    table.decimal("total", 10, 2).notNullable();
+    table.decimal("total_bs", 10, 2).defaultTo(0);
+    table.timestamps(true, true);
+  });
+  //crear tabla de  detalles de ventas
+  await knex.schema.createTable("detalles_ventas", (table) => {
+    table.increments("id").primary();
+    table.integer("venta_id").unsigned().references("id").inTable("ventas").onDelete("CASCADE");
+    table.integer("producto_id").unsigned().references("id").inTable("productos").onDelete("CASCADE");
+    table.decimal("cantidad", 10, 2).notNullable();
+    table.decimal("precio", 10, 2).notNullable();
+    table.decimal("precio_bs", 10, 2).defaultTo(0);
+    table.decimal("subtotal", 10, 2).notNullable();
+    table.timestamps(true, true);
+  });
 
   // Crear tabla pedidos
   await knex.schema.createTable("pedidos", (table) => {
@@ -67,6 +88,8 @@ export const up = async function (knex) {
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.decimal("tasa", 10, 2).notNullable();
   });
+
+
 };
 
 export const down = async function (knex) {
@@ -74,6 +97,8 @@ export const down = async function (knex) {
   await knex.schema.dropTableIfExists("pedido_productos");
   await knex.schema.dropTableIfExists("pedidos");
   await knex.schema.dropTableIfExists("productos");
+  await knex.schema.dropTableIfExists("ventas");
+  await knex.schema.dropTableIfExists("detalles_ventas");
   await knex.schema.dropTableIfExists("clientes");
   await knex.schema.dropTableIfExists("usuarios");
   await knex.schema.dropTableIfExists("dolar_today");

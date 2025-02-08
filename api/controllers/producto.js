@@ -85,7 +85,7 @@ export default (fastify) => ({
   },
 
   editProducto: async (request, reply) => {
-    const { id, nombre, descripcion, precio, precioBs, codigoBarras, stock } =
+    const { id, nombre, descripcion, precio, precio_bs, codigoBarras, stock } =
       request.body;
     const camposAActualizar = {};
     if (id !== undefined) camposAActualizar.id = id;
@@ -95,7 +95,7 @@ export default (fastify) => ({
     if (codigoBarras !== undefined)
       camposAActualizar.codigoBarras = codigoBarras;
     if (stock !== undefined) camposAActualizar.stock = stock;
-    if(precioBs !== undefined) camposAActualizar.precio_bs = precioBs; 
+    if(precio_bs !== undefined) camposAActualizar.precio_bs = precio_bs; 
 
     if (Object.keys(camposAActualizar).length === 0) {
       return reply

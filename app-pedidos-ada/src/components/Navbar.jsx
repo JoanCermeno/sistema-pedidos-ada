@@ -55,10 +55,10 @@ const handleLogout = () => {
           <ul className="menu menu-horizontal">
             {/* Navbar menu content here */}
             <li>
-              <a href="/facturar">Facturar</a>
+              <a href="/facturar">Crear factura</a>
             </li>
             <li>
-              <a href="/inventario">Productos</a>
+              <a href="/inventario">Inventario</a>
             </li>
             <li>
               <a href="/precios">Actualizador de precios</a>

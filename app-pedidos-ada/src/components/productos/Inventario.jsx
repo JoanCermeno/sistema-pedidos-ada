@@ -6,8 +6,10 @@ const Inventario = () => {
     <div>
         {/* Navbar */}
         <Navbar />
-      <h1 className="text-2xl font-bold mb-4 text-center">Inventario de productos</h1>
-      <ProductosTable />
+      {/* Contenido */}
+
+        <ProductosTable />
+
     </div>
   );
 };

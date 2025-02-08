@@ -16,8 +16,7 @@ export default (fastify) => ({
       // 2. Crear un token JWT
       const token = jwt.sign(
         { id: usuario.id, username: usuario.nombre },
-        fastify.config.JWT_SECRET,
-        { expiresIn: "1h" }
+        fastify.config.JWT_SECRET
       );
 
       // 3. Enviar el token al cliente

@@ -6,6 +6,7 @@ import pedidoController from "../controllers/pedido.js";
 import productoCOntroller from "../controllers/producto.js";
 import precioController from "../controllers/precio.js";
 import helloController from "../controllers/hello.js";
+import ventaController from "../controllers/ventas.js";
 import Test from "../models/Test.js";
 
 async function routes(fastify, options) {
@@ -49,6 +50,7 @@ async function routes(fastify, options) {
   const { validateTokenSession } = validarToken(fastify);
   const { actualizarPrecio } = precioController(fastify);
   const { obtenerPrecio } = precioController(fastify);
+  const { addVenta, allVentas } = ventaController(fastify);
 
   //rutas
   fastify.get("/", hi);
@@ -83,6 +85,12 @@ async function routes(fastify, options) {
   fastify.post("/tasaDolar", { preHandler: authMiddleware }, actualizarPrecio);
   //obtener el precio del día
   fastify.get("/tasaDolar", { preHandler: authMiddleware }, obtenerPrecio);
+
+  // post venta
+  fastify.post("/venta", { preHandler: authMiddleware }, addVenta);
+  // get ventas
+  fastify.get("/venta", { preHandler: authMiddleware }, allVentas);
+
 
 
   // prueba
