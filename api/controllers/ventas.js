@@ -3,16 +3,32 @@ import Venta from "../models/Venta.js";
 export default (fastify) => ({
   allVentas: async (request, reply) => {
     const ventaModel = new Venta(fastify);
-    
+    const { page = 1, limit = 20, search = null } = request.query;
+
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+
+    const safeLimit = isNaN(limitNum) ? 20 : limitNum;
+    const safePage = isNaN(pageNum) ? 1 : pageNum;
+
+    const offset = (safePage - 1) * safeLimit;
+
     try {
-      const ventas = await ventaModel.allVentas();
-      return ventas;
+      const result = await ventaModel.getVentas(limit,
+        offset,
+        page,
+        search);
+      return {
+        ventas: result.ventas, // Array de ventas paginado
+        totalVentas: result.totalVentas, // Total de ventas sin paginar
+        paginaActual: safePage, // Página actual
+        limit: safeLimit // Límite por página
+      };
     } catch (error) {
       fastify.log.error(error);
       reply.status(500).send({ error: "Error obteniendo las ventas" });
     }
   },
-
   addVenta: async (request, reply) => {
     const ventaModel = new Venta(fastify);
     const ventaData = request.body;

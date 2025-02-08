@@ -59,18 +59,51 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
   };
 
   const handleIncrementar = (id) => {
+    const producto = productos.find(p => p.id === id);
+    if (!producto) {
+      console.error(`Producto con ID ${id} no encontrado en la lista de productos.`);
+      return; // Sale de la función si el producto no se encuentra (manejo de error)
+    }
+
+    const stockDisponible = parseInt(producto.stock, 10);
+    const cantidadActual = producto.cantidad || 0; // Asegurarse de que cantidad tenga un valor inicial (0 si es undefined)
+    const nuevaCantidad = cantidadActual + 1;
+
+    if (nuevaCantidad > stockDisponible) {
+      // ¡Stock insuficiente! No incrementar y mostrar mensaje al usuario
+        const Toast = Swal.mixin({
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+              }
+            });
+            Toast.fire({
+              icon: "warning",
+              title: `No hay suficiente stock disponible para "${producto.nombre}". Stock disponible: ${stockDisponible}.`,
+            });
+      return; // Sale de la función sin incrementar la cantidad
+    }
+
+    // Si hay stock suficiente, incrementar la cantidad
     const nuevosProductos = productos.map((item) => {
       if (item.id === id) {
         return {
           ...item,
-          cantidad: item.cantidad + 1,
-          subtotal: item.precio * (item.cantidad + 1),
+          cantidad: nuevaCantidad, // Usar nuevaCantidad aquí
+          subtotal: item.precio * nuevaCantidad, // Usar nuevaCantidad aquí
         };
       }
       return item;
     });
-    onProductosSeleccionados(nuevosProductos); // <- Actualizar estado padre
+    onProductosSeleccionados(nuevosProductos); // Actualizar estado padre con los productos actualizados
   };
+
+
   const handleLimpiar = () => {
     onProductosSeleccionados([]);
   };
@@ -142,6 +175,7 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
           icon: "success",
           confirmButtonText: "Aceptar",
         });
+      
 
         // Reiniciar los valores del formulario
         handleLimpiar();
@@ -156,12 +190,15 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
       });
     }
   };
+
+
   return (
     <>
-      <div className="w-full flex flex-col gap-4 justify-start items-start p-10">
-        <header className="flex flex-col gap-2 items-center justify-end w-full">
+      <div className="w-full flex flex-col gap-2 justify-start items-start p-10">
+        <header className="flex flex-col items-end justify-end w-full  px-5 rounded">
+        <h1 className="text-md text-left text-gray-400 ">Datos del cliente</h1>
+
           <section className="flex flex-row gap-2 items-center justify-end w-full">
-            <h1 className="text-md mb-4 text-center">Datos del cliente</h1>
 
             <label className="input input-bordered input-sm flex items-center w-60 mb-4">
               <svg
@@ -243,9 +280,10 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
                         </button>
                         <input
                           type="number"
-                          className="input input-bordered input-sm join-item max-w-12"
+                          className="input input-bordered input-sm join-item max-w-16"
                           value={item.cantidad}
                           min={1}
+                          max={item.stock}
                           onChange={(e) => handleCantidad(e, item.id)}
                         />
                         <button

@@ -43,7 +43,7 @@ const handleLogout = () => {
           className="mx-2 fs-5 px-2 btn btn-ghost :hover:text-primary :hover:font-bold :hover:color-primary  cursor-pointer "
           onClick={handleHomeClick}
         >
-          Sistema ada ADA 
+         El dolar esta en
         <div className="badge badge-lg">{dolarToday} bs
 
           
