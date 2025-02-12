@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
@@ -56,7 +55,6 @@ const UpdatePrices = () => {
       //  console.log(data);
       setSuccess("Precio actualizado a " + precio + " bs.");
       localStorage.setItem("dolar", precio);
-
     } catch (error) {
       setError(error.message);
     } finally {
@@ -98,19 +96,18 @@ const UpdatePrices = () => {
     <>
       {/* Navbar */}
 
-      <Navbar/>
+      <Navbar />
 
       <div className="flex min-h-screen items-center justify-center">
         <div className="w-full max-w-md p-8 shadow-lg rounded-lg">
-          <h1 className="text-2xl text-center">
-            Actualiza el precio del dolar
-          </h1>
-
-          <div className="stats stats-vertical lg:stats-horizontal shadow w-full">
+          <div className="stats stats-vertical lg:stats-horizontal w-full bg-content shadow-xl bg-slate-100">
             <div className="stat">
-              <div className="stat-title">Ultima actualizacion del dolar </div>
+              <div className="stat-title">Precio del dolar </div>
               <div className="stat-value">{UltimoPrecio} bs</div>
-              <div className="stat-desc">{ultimaActualizacion}</div>
+              <div className="stat-desc">
+                Utilma vez actualizado
+                <b className="pl-1"> {ultimaActualizacion}</b>
+              </div>
             </div>
           </div>
 
@@ -120,7 +117,7 @@ const UpdatePrices = () => {
                 type="number"
                 step="0.01"
                 className="input input-bordered w-full mt-5"
-                placeholder={UltimoPrecio + " bs"}
+                placeholder="Ingrese el nuevo precio"
                 onChange={(e) => setPrecio(e.target.value)}
                 max={1000}
                 min={0}
@@ -141,7 +138,7 @@ const UpdatePrices = () => {
             )}
             <button
               type="submit"
-              className="btn ease-in-out btn-primary w-full shadow-md hover:shadow-lg shadow-primary-500/50 hover:shadow-primary-400/50 duration-300 transition-all"
+              className="btn ease-in-out btn-primary w-full shadow-md hover:shadow-lg shadow-primary-500/50 hover:shadow-primary-400/50 duration-300 transition-all font-extrabold"
             >
               Actualizar dolar y precios
               {loading && (
@@ -150,15 +147,15 @@ const UpdatePrices = () => {
             </button>
 
             {iamLoadding && (
-                <div className="toast toast-end cursor-pointer" onClick={handleToastClick}> 
+              <div
+                className="toast toast-end cursor-pointer"
+                onClick={handleToastClick}
+              >
                 <div className="alert alert-info">
                   <span>Estoy cargando, dame un chance D_D</span>
                 </div>
               </div>
             )}
-
-            
- 
           </form>
         </div>
       </div>
