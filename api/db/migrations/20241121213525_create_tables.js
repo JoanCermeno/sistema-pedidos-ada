@@ -22,9 +22,13 @@ export const up = async function (knex) {
     table.text("codigo_barra");
     table.string("nombre").notNullable();
     table.text("descripcion");
-    table.decimal("precio", 10, 2).notNullable();
+    table.decimal("precio_compra", 10, 2).defaultTo(0); // Añade la columna precio_compra
+    table.decimal("precio_mayorista", 10, 2).defaultTo(0); // Precio al mayor
+    table.decimal("precio_minorista", 10, 2).defaultTo(0); // Precio al detal (minorista)
+    table.decimal("precio_libre", 10, 2).defaultTo(0);     // Precio libre (flexible)
     table.decimal("precio_bs", 10, 2).defaultTo(0); // Precio en bolivares
     table.integer("stock").defaultTo(0); // Cantidad disponible
+    
     table.timestamps(true, true);
   });
   //crear tabla de ventas

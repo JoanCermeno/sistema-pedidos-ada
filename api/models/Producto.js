@@ -1,8 +1,17 @@
 // models/Producto.js
 
 class Producto {
-  constructor(fastify) {
+  constructor(fastify , nombre, descripcion, precio_compra, precio_mayorista, precio_minorista, precio_libre, stock, codigo_barra) {
     this.knex = fastify.knex; // Accedemos a la instancia de Knex desde Fastify
+    this.nombre = nombre;
+    this.descripcion = descripcion;
+    this.precio_compra = precio_compra;
+    this.precio_mayorista = precio_mayorista;
+    this.precio_minorista = precio_minorista;
+    this.precio_libre = precio_libre;
+    this.stock = stock;
+    this.codigo_barra = codigo_barra;
+    this.tasaDolarActual = 0; // Inicialmente, la tasa es 0 o se podría obtener de alguna configuración inicial
   }
 
   async obtenerTodos(limit, offset, page, search) {
@@ -11,7 +20,7 @@ class Producto {
       .limit(limit)
       .offset(offset);
 
-    if (search) {
+    if (search) {cxd
       query.where((builder) => {
         builder
           .where("nombre", "like", `%${search}%`)
@@ -19,7 +28,7 @@ class Producto {
       });
     }
 
-    const allProductos = await query;
+    const productosPaginados = await query;
     const totalQuery = this.knex("productos").count("* as count");
 
     if (search) {
@@ -33,11 +42,18 @@ class Producto {
     const total = await totalQuery.first();
 
     return {
-      allProductos,
+      productosPaginados,
       total: total.count,
       page: parseInt(page, 10),
       limit: parseInt(limit, 10),
     };
+  }
+  async obtenerProducto(id) {
+    const producto = await this.knex("productos")
+      .select("*")
+      .where({ id })
+      .first();
+    return producto;
   }
 
   async addListOfProduct(listaProducto) {
@@ -47,9 +63,10 @@ class Producto {
         // 2. Insertar todos los productos dentro de la transacción
         for (const producto of listaProducto) {
           await trx("productos").insert({
+            //**Del lado izquierdo de la tabla productos del lado derecho campos del archivo de datos**//
             nombre: producto.nombre,
             descripcion: producto.descripcion,
-            precio: producto.precio,
+            precio_minorista: producto.precio,
           });
         }
       });
@@ -58,7 +75,8 @@ class Producto {
       return "Productos importados con éxito";
     } catch (error) {
       console.error("Error guardando productos:", error);
-      return "Error al importar productos";
+      throw new Error({ success: false, message: "Error al importar productos" });
+      
     }
   }
 
@@ -145,6 +163,28 @@ class Producto {
       };
     }
   }
+
+  // Método para establecer la tasa de cambio del dólar (deberías actualizarla periódicamente)
+  setTasaDolar(tasa) {
+    this.tasaDolarActual = tasa;
+  }
+
+  getPrecioMayoristaBs() {
+    return parseFloat((this.precio_mayorista * this.tasaDolarActual).toFixed(2));
+  }
+
+  getPrecioMinoristaBs() {
+    return parseFloat((this.precio_minorista * this.tasaDolarActual).toFixed(2));
+  }
+
+  getPrecioLibreBs() {
+    return parseFloat((this.precio_libre * this.tasaDolarActual).toFixed(2));
+  }
+
+  getPrecioCompraBs() { // Opcional, si también quieres precio de compra en Bs
+    return parseFloat((this.precio_compra * this.tasaDolarActual).toFixed(2));
+  }
+
 }
 
 export default Producto;

@@ -6,7 +6,17 @@ class DolarToday {
     this.table = "dolar_today"; 
   }
 
+  /**
+   * Obtiene la tasa de cambio del dólar y la fecha de la última actualización.
+   *
+   * @async
+   * @returns {Promise<{tasa: number, fecha: string}>} Un objeto que contiene la tasa de cambio y la fecha de actualización.
+   *          `tasa`: La tasa de cambio del dólar (number).
+   *          `fecha`: La fecha de la última actualización en formato 'dd-mm-aaaa' (string), o "No hay actualizacion del precio del dolar" si no hay datos.
+   */
   async getDolarToday() {
+    //** Esta funcion retorna la tasa de cambio del dólar, y la fecha de la última actualización en un objeto
+    //  */
     try {
     //obtener el ultimo update del precio del dolar
     const ultimaActualizacion = await this.knex('dolar_today')
@@ -29,13 +39,10 @@ class DolarToday {
       const year = fecha.getFullYear();
       const ultimaActualizacionFormateada = `${day}-${month}-${year}`;
       return { tasa: ultimaActualizacion.tasa, fecha: ultimaActualizacionFormateada };
-      
+
     } catch (error) {
       console.log(error);
     }
-
-
-
   }
 
   async addDolarToday(fecha, tasa) {

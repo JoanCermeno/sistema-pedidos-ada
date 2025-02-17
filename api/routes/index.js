@@ -45,6 +45,7 @@ async function routes(fastify, options) {
     addProducto,
     editProducto,
     deleteProducto,
+    getProductoById,
   } = productoCOntroller(fastify);
   const { hi } = helloController(fastify);
   const { validateTokenSession } = validarToken(fastify);
@@ -63,14 +64,14 @@ async function routes(fastify, options) {
 
   //producto
   fastify.get("/productos", { preHandler: authMiddleware }, allProductos);
-
+  fastify.get("/producto/:id", { preHandler: authMiddleware }, getProductoById);
   // AGREGAR VARIOS PRODUCTOS DE UNA SOLA VEZ
   fastify.post("/productos", { preHandler: authMiddleware }, addProductosFrom);
   //AGREGAR UN SOLO PRODUCTO
   fastify.post("/producto", { preHandler: authMiddleware }, addProducto);
-  fastify.put("/producto", { preHandler: authMiddleware }, editProducto);
+  fastify.patch("/producto/:id", { preHandler: authMiddleware }, editProducto);
   fastify.delete(
-    "/productos/:id",
+    "/producto/:id",
     { preHandler: authMiddleware },
     deleteProducto
   );
