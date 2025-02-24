@@ -41,7 +41,7 @@ export const useProductManagement = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${apiUrl}/productos/${id}`, {
+      const response = await fetch(`${apiUrl}/producto/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `${token}`,
@@ -67,8 +67,8 @@ export const useProductManagement = () => {
     setError(null);
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`${apiUrl}/producto`, {
-        method: "PUT",
+      const response = await fetch(`${apiUrl}/producto/${productoToEditar.id}`, {
+        method: "PATCH",
         headers: {
           Authorization: `${token}`,
           "Content-Type": "application/json",

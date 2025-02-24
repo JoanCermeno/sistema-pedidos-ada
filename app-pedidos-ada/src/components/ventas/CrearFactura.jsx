@@ -1,13 +1,13 @@
 import React from "react";
-import Navbar from "../Navbar";
+
 import { useState, useEffect } from "react";
 import { useProductManagement } from "../../hooks/useProductManagement";
 import Swal from "sweetalert2";
 import Factura from "./Factura";
 
-const Sales = () => {
+const CrearFactura = () => {
   const page = 1;
-  const limit = 20;
+  const limit = 9;
   const token = localStorage.getItem("token");
   const [searchTerm, setSearchTerm] = useState("");
   const [productos, setProductos] = useState([]);
@@ -20,7 +20,6 @@ const Sales = () => {
     const fetchProductos = async () => {
       try {
         const data = await obtenerProductos(page, limit, searchTerm, token);
-
         setProductos(data.allProductos);
         setTotalPages(Math.ceil(data.total / limit));
         setTotalProductos(data.total);
@@ -37,7 +36,7 @@ const Sales = () => {
   }, [page, searchTerm]);
 
   const agregarProductoALaFactura = (productoToAdd) => {
-    console.log(productoToAdd);
+    console.warn(productoToAdd);
       // si la propiedad existencia es cero no se agrega al la factura
       if(productoToAdd.stock === 0){
           const Toast = Swal.mixin({
@@ -57,11 +56,14 @@ const Sales = () => {
               });
         return;
       }
+
+    //Precio de venta va a variar dependiendo del tipo de precio que se eleija en la factura
+
     // Agregar propiedades cantidad y subtotal
     const productoConDetalles = {
       ...productoToAdd,
       cantidad: 1, // <- Inicializar cantidad
-      subtotal: productoToAdd.precio * 1, // <- Calcular subtotal inicial
+      subtotal: productoToAdd.precio_minorista * 1, // <- Calcular subtotal inicial
     };
 
     if (productoSeleccionado.length === 0) {
@@ -79,15 +81,12 @@ const Sales = () => {
 
   return (
     <div>
-      {/* Navbar */}
-      <Navbar />
-      {/* Contenido */}
-
       <div className="flex flex-row justify-left w-full px-2">
-        <div className="max-w-[60%] flex flex-col gap-2 justify-center px-4 pt-4 rounded-lg border shadow-lg">
+        <div className="flex w-[40%] flex-col gap-2 justify-center px-4 pt-4 rounded border border-base-300 shadow-lg bg-base-200"> 
           <h1 className="text-2xl font-bold mb-4 text-center">
             Productos Disponibles
           </h1>
+
           <input
             type="text"
             placeholder="Buscar por Nombre"
@@ -96,21 +95,23 @@ const Sales = () => {
           />
 
           <div className="overflow-auto max-h-screen">
-            <table className="table">
+            <table className="table w-full">
               {/* head */}
               <thead>
                 <tr>
                   <th>Producto</th>
                   <th>Precio</th>
                   <th>Existencia</th>
-                  <th>Agregar</th>
                 </tr>
               </thead>
               <tbody>
                 {/* row 2 */}
                 {productos.length > 0 ? (
                   productos.map((producto) => (
-                    <tr key={producto.id}>
+                    <tr key={producto.id}
+                    className="hover:bg-base-300 cursor-pointer"
+                    onClick={() => agregarProductoALaFactura(producto)}
+                    >
                       <td>
                         {producto.nombre}
                         <small className="text-sm text-gray-500">
@@ -118,21 +119,15 @@ const Sales = () => {
                           {producto.descripcion}
                         </small>
                       </td>
-                      <td>
-                        {producto.precio}$ <br />
+                      <td className="text-right">
+                        {producto.precio_minorista}$ <br />
                         <small className="text-sm text-gray-500">
-                          {producto.precio_bs}Bs.
+                         {producto.precio_minorista_bs}Bs.
                         </small>
                       </td>
-                      <td>{producto.stock}</td>
-                      <th>
-                        <button
-                          className="btn btn-outline btn-info btn-sm"
-                          onClick={() => agregarProductoALaFactura(producto)}
-                        >
-                          Añadir
-                        </button>
-                      </th>
+                      <td 
+                        className="text-right"
+                      >{producto.stock}</td>
                     </tr>
                   ))
                 ) : (
@@ -159,4 +154,4 @@ const Sales = () => {
   );
 };
 
-export default Sales;
+export default CrearFactura;

@@ -53,7 +53,7 @@ const UpdatePrices = () => {
       }
       const data = await response.json();
       //  console.log(data);
-      setSuccess("Precio actualizado a " + precio + " bs.");
+      setSuccess(data.message);
       localStorage.setItem("dolar", precio);
     } catch (error) {
       setError(error.message);
@@ -81,7 +81,7 @@ const UpdatePrices = () => {
           throw new Error("Error al obtener el precio del dolar");
         }
         const data = await response.json();
-        console.log(data);
+
         setUltimoPrecio(data.tasa);
         setUltimaActualizacion(data.fecha);
       } catch (error) {
@@ -90,18 +90,14 @@ const UpdatePrices = () => {
     };
 
     getUltimoPrecio();
-  }, []);
+  }, [loading]);
 
   return (
     <>
-      {/* Navbar */}
-
-      <Navbar />
-
       <div className="flex min-h-screen items-center justify-center">
         <div className="w-full max-w-md p-8 shadow-lg rounded-lg">
-          <div className="stats stats-vertical lg:stats-horizontal w-full bg-content shadow-xl bg-slate-100">
-            <div className="stat">
+          <div className="stats stats-vertical lg:stats-horizontal w-full bg-content shadow-xl">
+            <div className="stat bg-info">
               <div className="stat-title">Precio del dolar </div>
               <div className="stat-value">{UltimoPrecio} bs</div>
               <div className="stat-desc">
@@ -140,7 +136,7 @@ const UpdatePrices = () => {
               type="submit"
               className="btn ease-in-out btn-primary w-full shadow-md hover:shadow-lg shadow-primary-500/50 hover:shadow-primary-400/50 duration-300 transition-all font-extrabold"
             >
-              Actualizar dolar y precios
+              Actualizar Tasa 
               {loading && (
                 <span className="loading loading-spinner loading-md"></span>
               )}

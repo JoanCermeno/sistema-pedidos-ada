@@ -6,21 +6,24 @@ import FormEditaProducto from "./formularios/FormEditaProducto";
 import DropdownActions from "./../menus/DropdownActions";
 import { useProductManagement } from "../../hooks/useProductManagement";
 import Modal from "./../modales/Modal";
+import { useNavigate } from "react-router-dom";
 
 const ProductosTable = () => {
+  const navigate = useNavigate(); // Obtenemos la función navigate
   const [productos, setProductos] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [limit, setLimit] = useState(20); // Productos por página
   const [totalProductos, setTotalProductos] = useState(0);
   const [modalSubirProductos, setModalSubirProductos] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState({
-    id: 0,
+    id: 0
   });
   const [modalEditar, setModalEditar] = useState(false);
   const token = localStorage.getItem("token");
-  const limit = 20; // Productos por página
-  const { obtenerProductos, eliminarProducto, loading, error } = useProductManagement();
+  const { obtenerProductos, eliminarProducto, loading, error } =
+    useProductManagement();
 
   // Obtener productos cuando cambia la página o el término de búsqueda
   useEffect(() => {
@@ -41,8 +44,7 @@ const ProductosTable = () => {
       }
     };
     fetchProductos();
-  }, [page, searchTerm,modalEditar ]);
-
+  }, [page, searchTerm, modalEditar, limit]);
 
   // Cambiar a la página anterior
   const handlePreviousPage = () => {
@@ -56,10 +58,11 @@ const ProductosTable = () => {
 
   // Agregar un producto a la tabla
   const agregarProductoALaTabla = (nuevoProducto) => {
+    console.log(nuevoProducto);
     setProductos([...productos, nuevoProducto]);
     Swal.fire({
       title: "¡Éxito!",
-      text: `Producto con ID ${nuevoProducto.id} agregado correctamente.`,
+      text: `Producto con ID ${nuevoProducto.producto.id} agregado correctamente.`,
       icon: "success",
       confirmButtonText: "Aceptar",
     });
@@ -86,7 +89,11 @@ const ProductosTable = () => {
       try {
         await eliminarProducto(id, token);
         setProductos(productos.filter((producto) => producto.id !== id));
-        Swal.fire("Eliminado", "El producto fue eliminado correctamente", "success");
+        Swal.fire(
+          "Eliminado",
+          "El producto fue eliminado correctamente",
+          "success"
+        );
       } catch (error) {
         Swal.fire("Error", "No se pudo eliminar el producto", "error");
       }
@@ -96,20 +103,23 @@ const ProductosTable = () => {
   // Editar un producto
   const handleEditar = (producto) => {
     setProductoSeleccionado(producto);
-    setModalEditar(true);//abrir el modal de editar
-
+    setModalEditar(true); //abrir el modal de editar
   };
 
   return (
     <div className="container mx-auto px-5">
+      <section className="fluid pb-5" id="cargo_inventario"></section>
       <section className="fluid pb-5">
         <div className="flex flex-row gap-1">
-          <h1 className="text-2xl font-bold text-left mb-4">Productos</h1>
+          <h1 className="text-2xl font-bold text-left mb-4">Vista general</h1>
           <small>{totalProductos > 0 ? totalProductos : "0"}</small>
         </div>
-        <div className="flex flex-col md:flex-row lg:flex-row gap-2 lg:items-center">
-          <div className="flex flex-row flex-1 join">
-            <AgregarProducto className="join-item" onProductoAgregado={agregarProductoALaTabla} />
+        <div className="flex flex-col md:flex-col lg:flex-row gap-2 lg:justify-between ">
+          <div className="flex flex-row join ">
+            <AgregarProducto
+              className="join-item"
+              onProductoAgregado={agregarProductoALaTabla}
+            />
 
             <button
               className="btn btn-sm join-item"
@@ -117,28 +127,49 @@ const ProductosTable = () => {
             >
               Cargar productos desde un archivo
             </button>
+            <button
+              className="btn btn-sm join-item"
+              onClick={() => navigate('/audit')}
+            >
+              Auditoria
+            </button>
           </div>
 
-          <label className="input input-sm input-bordered flex items-center gap-2">
-            <input
-              type="text"
-              className="grow"
-              placeholder="Buscar por nombre"
-              onChange={buscarPor}
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
+          <div className=" flex flex-row gap-2 items-center ">
+            <label className="input input-sm input-bordered flex items-center gap-2">
+              <input
+                type="text"
+                className="grow"
+                placeholder="Buscar por nombre"
+                onChange={buscarPor}
               />
-            </svg>
-          </label>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                className="h-4 w-4 opacity-70"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </label>
+            <select
+              className="select select-bordered select-xs max-w-xs"
+              value={limit}
+              onChange={(e) => setLimit(e.target.value)}
+            >
+              <option disabled selected>
+                Cantidad por página
+              </option>
+              <option>20</option>
+              <option>50</option>
+              <option>150</option>
+              <option>300</option>
+            </select>
+          </div>
         </div>
       </section>
       <div>
@@ -146,9 +177,11 @@ const ProductosTable = () => {
           <table className="table table-pin-rows">
             <thead>
               <tr className="text-orange-950 text-md font-bold tracking-wide">
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Precio $ / Bs</th>
+                <td>ID</td>
+                <th>Nombre y descripcion</th>
+                <th>Costo $ / Bs</th>
+                <th>Al delta $ / Bs</th>
+                <th>Al mayor $ / Bs</th>
                 <th>Existencia</th>
                 <th>Opciones</th>
               </tr>
@@ -156,16 +189,45 @@ const ProductosTable = () => {
             <tbody>
               {productos.length > 0 ? (
                 productos.map((producto) => (
-                  <tr key={producto.id}  className={producto.id === productoSeleccionado.id ? "bg-slate-50" : ""}>
-                    <td>{producto.nombre}</td>
-                    <td>{producto.descripcion}</td>
-                    <td className="flex flex-col gap-1">
-                      {producto.precio}$
+                  <tr
+                    key={producto.id}
+                  >
+                    <td>
                       <small className="text-sm text-gray-500">
-                        {producto.precio_bs}Bs.
+                        {producto.id}
                       </small>
                     </td>
+
+                    <td>
+                      {producto.nombre} <br />
+                      <small className="text-sm text-gray-500">
+                        {producto.descripcion}
+                      </small>
+                    </td>
+
+                    <td>
+                      {producto.precio_compra}$ <br />
+                      <small className="text-sm text-gray-500">
+                        {producto.precio_compra_bs}Bs.
+                      </small>
+                    </td>
+
+                    <td>
+                      {producto.precio_minorista}$ <br />
+                      <small className="text-sm text-gray-500">
+                        {producto.precio_minorista_bs}Bs.
+                      </small>
+                    </td>
+
+                    <td>
+                      {producto.precio_mayorista}$ <br />
+                      <small className="text-sm text-gray-500">
+                        {producto.precio_mayorista_bs}Bs.
+                      </small>
+                    </td>
+
                     <td>{producto.stock}</td>
+
                     <td>
                       <DropdownActions
                         id={producto.id}
@@ -194,17 +256,18 @@ const ProductosTable = () => {
           </table>
         </div>
       </div>
-        {/* Modal de edición */}
-        <Modal
-          titulo="Editar Producto"
-          isOpen={modalEditar}
-          onClose={() => setModalEditar(false)}
-        >
-          <FormEditaProducto
-            productoToEditar={productoSeleccionado}
-            onClose={() => setModalEditar(false)} // Aquí pasamos la función para cerrar el modal
-          ></FormEditaProducto>
-        </Modal>
+      {/* Modal de edición */}
+      <Modal
+        titulo="Editar Producto"
+        isOpen={modalEditar}
+        onClose={() => setModalEditar(false)}
+      >
+        <FormEditaProducto
+          productoToEditar={productoSeleccionado}
+          onClose={() => setModalEditar(false)} // Aquí pasamos la función para cerrar el modal
+        ></FormEditaProducto>
+        
+      </Modal>
 
       <div className="flex justify-center items-center my-10">
         <button

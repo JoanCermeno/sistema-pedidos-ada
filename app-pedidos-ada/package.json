@@ -12,13 +12,13 @@
   "dependencies": {
     "daisyui": "^4.12.14",
     "html5-qrcode": "^2.3.8",
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.4",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.6",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.1",
-    "sweetalert2": "^11.14.5"
+    "sweetalert2": "^11.6.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",

@@ -4,12 +4,8 @@ import Navbar from "../Navbar";
 const Inventario = () => {
   return (
     <div>
-        {/* Navbar */}
-        <Navbar />
       {/* Contenido */}
-
         <ProductosTable />
-
     </div>
   );
 };

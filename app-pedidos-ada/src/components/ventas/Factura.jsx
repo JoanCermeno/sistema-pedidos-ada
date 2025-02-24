@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { usePostRequest } from "../../hooks/usePostRequest";
 import { dateToYyyyMmDd, dateToHhMmSs } from "../../utils/dateUtil";
 import Swal from "sweetalert2";
-import { use } from "react";
+
 const Factura = ({ productos = [], onProductosSeleccionados }) => {
   const [total, setTotal] = useState(0);
   const [totalBs, setTotalBs] = useState(0);
   const { callApi, loading, response, error } = usePostRequest(); //solo para el envio de datos
   const [nombreCliente, setNombreCliente] = useState("");
   const [cedula, setCedula] = useState("");
+  const [tipoPrecio, setTipoPrecio] = useState([
+    "precio_minorista",
+    "precio_mayorista",
+    "precio_libre"
+  ]);
 
   // Calcular total cuando cambia el array de productos
   useEffect(() => {
@@ -31,7 +35,7 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
         return {
           ...item,
           cantidad: cantidad,
-          subtotal: item.precio * cantidad,
+          subtotal: item.tipoPrecio * cantidad,
         };
       }
       return item;
@@ -95,7 +99,7 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
         return {
           ...item,
           cantidad: nuevaCantidad, // Usar nuevaCantidad aquí
-          subtotal: item.precio * nuevaCantidad, // Usar nuevaCantidad aquí
+          subtotal: item.tipoPrecio * nuevaCantidad, // Usar nuevaCantidad aquí
         };
       }
       return item;
@@ -123,27 +127,28 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
       return;
     }
 
-    // Guardar venta
-    //debe seguir el siguiente formato
+    // guardar factura objeto de ejemplo
     // {
-    //   "total": "150.50",
-    //   "detalles": [
+    //   "nombre_cliente": "Cliente de Contado Ejemplo",
+    //   "observaciones": "Venta de contado, cliente regular", 
+    //   "metodo_pago": "Efectivo", 
+    //   "total_factura": 125.50,
+    //   "detalles_factura": [   
     //     {
-    //       "producto_id": "1",
-    //       "cantidad": "2",
-    //       "precio": "50.00",
-    //       "precio_bs": "500.00",
-    //       "subtotal": "100.00"
+    //       "producto_id": 1,     
+    //       "cantidad": 2,
+    //       "precio_unitario": 25.00,
+    //       "subtotal": 50.00   
     //     },
     //     {
-    //       "producto_id": "2",
-    //       "cantidad": "1",
-    //       "precio": "50.50",
-    //       "precio_bs": "505.00",
-    //       "subtotal": "50.50"
+    //       "producto_id": 3,
+    //       "cantidad": 1,
+    //       "precio_unitario": 75.50,
+    //       "subtotal": 75.50
     //     }
     //   ]
     // }
+
     const data = {
       nombre_cliente: nombreCliente,
       cedula: cedula,
@@ -194,9 +199,9 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
 
   return (
     <>
-      <div className="w-full flex flex-col gap-2 justify-start items-start p-10">
+      <div className="flex w-full  flex-col gap-2 justify-start items-start p-10  bg-base-100">
         <header className="flex flex-col items-end justify-end w-full  px-5 rounded">
-        <h1 className="text-md text-left text-gray-400 ">Datos del cliente</h1>
+        <h1 className="text-md text-left ">Datos del cliente</h1>
 
           <section className="flex flex-row gap-2 items-center justify-end w-full">
 
@@ -236,7 +241,6 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
               <thead>
                 <tr>
                   <th>Quitar</th>
-
                   <th>Producto</th>
                   <th>Precio Unitario</th>
                   <th>Cantidad</th>

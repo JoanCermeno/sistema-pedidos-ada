@@ -21,7 +21,8 @@ export default {
       },
       "dim",
       "nord",
-      "bumblebee"
+      "bumblebee",
+      "light"
     ],
   },
   plugins: [require("daisyui")],

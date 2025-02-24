@@ -15,6 +15,7 @@ const ProductoRow = ({ producto, onEditar, onEliminar }) => {
           opciones={[
             { texto: "Editar", accion: () => onEditar(producto) },
             { texto: "Eliminar", accion: () => onEliminar(producto.id) },
+            { texto: "Ver detalles", accion: () => console.log("Ver") },
           ]}
         />
       </td>

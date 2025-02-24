@@ -41,11 +41,11 @@ const LoginForm = () => {
         didOpen: (toast) => {
           toast.onmouseenter = Swal.stopTimer;
           toast.onmouseleave = Swal.resumeTimer;
-        }
+        },
       });
       Toast.fire({
         icon: "error",
-        title: error
+        title: error,
       });
     } finally {
       setLoading(false);
@@ -56,7 +56,7 @@ const LoginForm = () => {
     <div className="flex min-h-screen items-center justify-center">
       <div className="w-full max-w-md p-8 shadow-xl rounded-lg bg-slate-50">
         <h1 className="text-2xl font-bold mb-4 text-center text-orange-950">
-          Sistema ADA
+          iniciar sesión
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -87,18 +87,17 @@ const LoginForm = () => {
             type="submit"
             className="btn  btn-accent w-full shadow-md hover:shadow-orange-950 font-bold text-md "
           >
-
             Entrar
             {loading && (
               <span className="loading loading-spinner loading-sm"></span>
             )}
           </button>
-          <div className="flex flex-col justify-center items-center gap-1 pt-5"> 
-            <small>No tienes cuenta? <a href="/register">Registrate</a></small>
-          <small> Olvidaste tu contraseña? <a href="/resetPassword">Recuperar</a></small>
-
+          <div className="flex flex-col justify-center items-center gap-1 pt-5">
+            <small>
+              {" "}
+              Olvidaste tu contraseña? <a href="/resetPassword">Recuperar</a>
+            </small>
           </div>
-  
         </form>
       </div>
     </div>
