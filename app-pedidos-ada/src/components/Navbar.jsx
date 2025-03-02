@@ -23,7 +23,7 @@ const Navbar = ({ children }) => {
       <div className="drawer-content flex flex-col">
         {/* Navbar */}
    {/* Navbar */}
-   <div className="navbar bg-base-50 shadow-md w-full border-b-2  justify-between">
+   <div className="navbar bg-base-50 shadow-md w-full   justify-between">
           {!isLoginPage && ( // **Mostrar el botón de hamburguesa SÓLO si NO es la página de login**
             <div className="flex-none lg:hidden">
               <label htmlFor="my-drawer-3" aria-label="open sidebar" className="btn btn-square btn-ghost">

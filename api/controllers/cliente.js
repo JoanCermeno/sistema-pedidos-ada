@@ -23,6 +23,7 @@ export default (fastify) => ({
       }
       reply.send(cliente);
     } catch (error) {
+      fastify.log.error(error);
       reply.status(500).send({ message: "Error al buscar cliente" });
     }
   }, 
@@ -35,6 +36,7 @@ export default (fastify) => ({
       const clienteAgregado = await modelCliente.agregarCliente(cliente);
       reply.send(clienteAgregado);
     } catch (error) {
+      fastify.log.error(error);
       reply.status(500).send({ message: "Error al agregar cliente" });
     }
   },

@@ -30,7 +30,7 @@ async function routes(fastify, options) {
 
   //ojo muy importante pasamos el objeto fastify a todos los controladores y depues si extraemos las funciones
   const { autenticarUsuario, addUser } = userControllers(fastify);
-  const { obtenerClientes , buscarClientePorCedula, agregarCliente } = clienteController(fastify);
+  const { obtenerClientes , buscarPorCedula, agregarCliente } = clienteController(fastify);
   const { obtenerPedidos } = pedidoController(fastify);
   const {
     allProductos,
@@ -100,6 +100,7 @@ async function routes(fastify, options) {
 
   //clientes
   fastify.get("/cliente", { preHandler: authMiddleware }, obtenerClientes);
+  fastify.get("/cliente/:cedula", { preHandler: authMiddleware }, buscarPorCedula);
   fastify.post("/cliente", { preHandler: authMiddleware }, agregarCliente);
 
   //pedidos

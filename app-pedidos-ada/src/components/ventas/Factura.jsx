@@ -1,244 +1,391 @@
 import React, { useState, useEffect } from "react";
 import { usePostRequest } from "../../hooks/usePostRequest";
-import { dateToYyyyMmDd, dateToHhMmSs } from "../../utils/dateUtil";
+import { dateToDdMmYyyy } from "../../utils/dateUtil";
 import Swal from "sweetalert2";
+import ModalCheckbox from "../modales/ModalCheckbox";
+import useBuscarClientePorCedula from "../../hooks/useBuscarClientePorCedula";
 
-const Factura = ({ productos = [], onProductosSeleccionados }) => {
-  const [total, setTotal] = useState(0);
-  const [totalBs, setTotalBs] = useState(0);
+const Factura = ({ productoToAdd }) => {
+  const dolarToday = localStorage.getItem("dolar");
+
   const { callApi, loading, response, error } = usePostRequest(); //solo para el envio de datos
-  const [nombreCliente, setNombreCliente] = useState("");
-  const [cedula, setCedula] = useState("");
-  const [tipoPrecio, setTipoPrecio] = useState([
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null); //  <-- ¡NUEVO ESTADO!
+  const tiposPrecioFacturaOpciones = [
+    // <-- ¡NUEVO: Definir el array de opciones como una constante FUERA del estado!
     "precio_minorista",
     "precio_mayorista",
-    "precio_libre"
-  ]);
-
-  // Calcular total cuando cambia el array de productos
+    "precio_libre",
+  ];
+  const [tipoPrecioSeleccionadoFactura, setTipoPrecioSelecionadoFactura] =
+    useState("precio_minorista"); // <-- ¡ESTADO para guardar el TIPO DE PRECIO SELECCIONADO! - Inicializar con "precio_minorista" por defecto
+  const [total, setTotal] = useState(0); // <-- ¡NUEVO ESTADO LOCAL!
+  const [productosFactura, setProductosFactura] = useState([]); // <-- ¡NUEVO ESTADO LOCAL!
+  const [isModalOpen, setIsModalOpen] = useState(false); // <-- para EL MODAL!
+  const [esFacturaCredito, setEsFacturaCredito] = useState(false); // <-- ¡NUEVO ESTADO PARA EL CHECKBOX!
   useEffect(() => {
-    const valorDolar = parseFloat(localStorage.getItem("dolar")) || 1; // Valor por defecto 1
-    const nuevoTotal = productos.reduce(
-      (sum, item) => sum + (item.subtotal || 0),
-      0
-    );
-    const nuevoTotalBs = (nuevoTotal * valorDolar).toFixed(2);
+    if (productoToAdd) {
+      console.warn("Producto recibido en Factura:", productoToAdd);
+      setProductosFactura((prevState) => {
+        const productoExistente = prevState.find(
+          (p) => p.id === productoToAdd.id
+        );
+        if (productoExistente) {
+          console.warn(
+            "Producto ya existe en la factura:",
+            productoToAdd.nombre
+          );
+          Swal.fire({
+            // <-- ¡USA Swal.fire CON CONFIGURACIÓN DE TOAST!
+            toast: true, // <-- ¡CONFIGURA COMO TOAST!
+            position: "top-end", // <-- ¡POSICIÓN: esquina superior derecha!
+            timer: 3000, // <-- ¡CIERRE AUTOMÁTICO después de 3 segundos!
+            showConfirmButton: false, // <-- ¡OCULTA el botón de confirmación!
+            timerProgressBar: false, // <-- ¡OCULTA la barra de progreso (opcional)!
+            icon: "warning", // <-- ¡ÍCONO de advertencia!
+            title: `${productoToAdd.nombre} ya existe en la lista`, // <-- ¡MENSAJE!
+          });
+          return prevState;
+        } else {
+          const productoParaFactura = {
+            ...productoToAdd,
+            cantidad: 1,
+            tipoPrecioFactura: tipoPrecioSeleccionadoFactura,
+            subtotal: productoToAdd[tipoPrecioSeleccionadoFactura] * 1,
+            subTotalBs:
+              productoToAdd[tipoPrecioSeleccionadoFactura] * 1 * dolarToday, // Recalcular subtotal en Bs.
+          };
+          return [...prevState, productoParaFactura];
+        }
+      });
+    }
+  }, [productoToAdd, tipoPrecioSeleccionadoFactura]);
 
-    setTotal(nuevoTotal);
-    setTotalBs(nuevoTotalBs);
-  }, [productos]);
+  useEffect(() => {
+    recalcularTotalFactura();
+  }, [productosFactura]);
+
+  // Cuando cambie el tipo de precio, recalcular subtotal y subtotal en Bs.
+  useEffect(() => {
+    if (tipoPrecioSeleccionadoFactura) {
+      console.log(
+        "Tipo de precio seleccionado cambió a:",
+        tipoPrecioSeleccionadoFactura
+      );
+      setProductosFactura((prevState) => {
+        return prevState.map((producto) => {
+          return {
+            ...producto,
+            tipoPrecioFactura: tipoPrecioSeleccionadoFactura, // Actualizar el tipo de precio en cada producto
+            subtotal:
+              producto.cantidad * producto[tipoPrecioSeleccionadoFactura], // Recalcular subtotal
+            subTotalBs:
+              producto.cantidad *
+              producto[tipoPrecioSeleccionadoFactura] *
+              dolarToday, // Recalcular subtotal en Bs.
+          };
+        });
+      });
+    }
+  }, [tipoPrecioSeleccionadoFactura, dolarToday]); // Depende de tipoPrecioSeleccionadoFactura y dolarToday
+
+  const {
+    clientes,
+    error: errorCliente,
+    isLoading: isLoadingCliente,
+    setCedulaHook,
+  } = useBuscarClientePorCedula();
+
+  const handleTipoPrecioChange = (event) => {
+    setTipoPrecioSelecionadoFactura(event.target.value); // <-- ¡USAR setTipoPrecioSelecionadoFactura CORRECTAMENTE!
+  };
 
   const handleCantidad = (e, id) => {
-    const cantidad = parseInt(e.target.value, 10);
-    const nuevosProductos = productos.map((item) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          cantidad: cantidad,
-          subtotal: item.tipoPrecio * cantidad,
-        };
-      }
-      return item;
-    });
-    onProductosSeleccionados(nuevosProductos); // <- Actualizar estado padre
-  };
+    const nuevaCantidad = parseFloat(e.target.value); // Convertir a número decimal
 
-  const eliminarProducto = (id) => {
-    const nuevosProductos = productos.filter((item) => item.id !== id);
-    onProductosSeleccionados(nuevosProductos); // <- Actualizar estado padre
-  };
+    if (isNaN(nuevaCantidad)) {
+      // No es un número válido
+      Swal.fire("Error", "Por favor, ingrese una cantidad válida", "error");
+      return; // No hacer nada si no es un número válido
+    }
 
-  const handleDecrementar = (id) => {
-    const nuevosProductos = productos.map((item) => {
-      if (item.id === id && item.cantidad > 1) {
-        return {
-          ...item,
-          cantidad: item.cantidad - 1,
-          subtotal: item.precio * (item.cantidad - 1),
-        };
-      }
-      return item;
+    if (nuevaCantidad < 0) {
+      // Cantidad negativa (no permitir, o permitir 0 si es lógico para tu negocio)
+      Swal.fire("Error", "La cantidad no puede ser negativa", "error");
+      return;
+    }
+
+    if (nuevaCantidad > 999999) {
+      // Un límite máximo arbitrario para evitar cantidades excesivamente grandes
+      Swal.fire("Error", "Cantidad demasiado grande", "error");
+      return;
+    }
+
+    setProductosFactura((prevState) => {
+      return prevState.map((item) => {
+        if (item.id === id) {
+          let cantidadAjustada = nuevaCantidad;
+
+          if (cantidadAjustada > item.stock) {
+            cantidadAjustada = item.stock; // Limitar a stock máximo
+            Swal.fire(
+              "Advertencia",
+              `Cantidad ajustada al stock máximo (${item.stock})`,
+              "warning"
+            );
+          }
+          if (cantidadAjustada < 0.1 && cantidadAjustada !== 0) {
+            // Permitir 0, pero no valores menores a 0.1 (excepto 0)
+            cantidadAjustada = 0.1; // Mínimo 0.1
+            Swal.fire(
+              "Advertencia",
+              `Cantidad ajustada al mínimo (0.1)`,
+              "warning"
+            );
+          }
+
+          return {
+            ...item,
+            cantidad: cantidadAjustada,
+            subtotal: cantidadAjustada * item[tipoPrecioSeleccionadoFactura], // Recalcular subtotal
+            subTotalBs:
+              cantidadAjustada *
+              item[tipoPrecioSeleccionadoFactura] *
+              dolarToday, // Recalcular subtotal en Bs.
+          };
+        }
+        return item;
+      });
     });
-    onProductosSeleccionados(nuevosProductos); // <- Actualizar estado padre
+    recalcularTotalFactura(); // Recalcular el total de la factura después de cambiar la cantidad
   };
 
   const handleIncrementar = (id) => {
-    const producto = productos.find(p => p.id === id);
-    if (!producto) {
-      console.error(`Producto con ID ${id} no encontrado en la lista de productos.`);
-      return; // Sale de la función si el producto no se encuentra (manejo de error)
-    }
+    setProductosFactura((prevState) => {
+      return prevState.map((item) => {
+        if (item.id === id) {
+          let nuevaCantidad = item.cantidad + 0.1; // Incrementar en 0.1
 
-    const stockDisponible = parseInt(producto.stock, 10);
-    const cantidadActual = producto.cantidad || 0; // Asegurarse de que cantidad tenga un valor inicial (0 si es undefined)
-    const nuevaCantidad = cantidadActual + 1;
+          if (nuevaCantidad > item.stock) {
+            nuevaCantidad = item.stock; // Limitar a stock máximo
+            Swal.fire(
+              "Advertencia",
+              `Cantidad ajustada al stock máximo (${item.stock})`,
+              "warning"
+            );
+          }
 
-    if (nuevaCantidad > stockDisponible) {
-      // ¡Stock insuficiente! No incrementar y mostrar mensaje al usuario
-        const Toast = Swal.mixin({
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
-              }
-            });
-            Toast.fire({
-              icon: "warning",
-              title: `No hay suficiente stock disponible para "${producto.nombre}". Stock disponible: ${stockDisponible}.`,
-            });
-      return; // Sale de la función sin incrementar la cantidad
-    }
-
-    // Si hay stock suficiente, incrementar la cantidad
-    const nuevosProductos = productos.map((item) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          cantidad: nuevaCantidad, // Usar nuevaCantidad aquí
-          subtotal: item.tipoPrecio * nuevaCantidad, // Usar nuevaCantidad aquí
-        };
-      }
-      return item;
+          return {
+            ...item,
+            cantidad: nuevaCantidad,
+            subtotal: nuevaCantidad * item[tipoPrecioSeleccionadoFactura], // Recalcular subtotal
+            subTotalBs:
+              nuevaCantidad * item[tipoPrecioSeleccionadoFactura] * dolarToday, // Recalcular subtotal en Bs.
+          };
+        }
+        return item;
+      });
     });
-    onProductosSeleccionados(nuevosProductos); // Actualizar estado padre con los productos actualizados
+    recalcularTotalFactura(); // Recalcular el total de la factura después de incrementar la cantidad
   };
 
+  const handleDecrementar = (id) => {
+    setProductosFactura((prevState) => {
+      return prevState.map((item) => {
+        if (item.id === id) {
+          let nuevaCantidad = item.cantidad - 0.1; // Decrementar en 0.1
 
+          if (nuevaCantidad < 0.1 && nuevaCantidad !== 0) {
+            // Permitir 0, pero no valores menores a 0.1 (excepto 0)
+            nuevaCantidad = 0.1; // Mínimo 0.1
+            Swal.fire(
+              "Advertencia",
+              `Cantidad ajustada al mínimo (0.1)`,
+              "warning"
+            );
+          }
+          if (nuevaCantidad < 0) {
+            nuevaCantidad = 0; // Mínimo 0
+          }
+
+          return {
+            ...item,
+            cantidad: nuevaCantidad,
+            subtotal: nuevaCantidad * item[tipoPrecioSeleccionadoFactura], // Recalcular subtotal
+          };
+        }
+        return item;
+      });
+    });
+    recalcularTotalFactura(); // Recalcular el total de la factura después de decrementar la cantidad
+  };
+
+  const recalcularTotalFactura = () => {
+    setTotal(
+      productosFactura.reduce(
+        (acumulador, producto) => acumulador + producto.subtotal,
+        0
+      )
+    );
+  };
+
+  const quitarProducto = (id) => {
+    setProductosFactura((prevState) => {
+      return prevState.filter((producto) => producto.id !== id);
+    });
+    recalcularTotalFactura();
+  };
   const handleLimpiar = () => {
-    onProductosSeleccionados([]);
+    return;
   };
-  const handleGuardar = async (e) => {
-    e.preventDefault();
-    if (loading) {
-      console.warn("Ya se está guardando una venta");
-      return;
-    }
-    if (nombreCliente === "" || cedula === "" || productos.length === 0) {
-      Swal.fire({
-        title: "Error",
-        text: "No puedes guardar una venta sin nombre cliente, cedula o productos",
-        icon: "error",
-        confirmButtonText: "Aceptar",
-      });
-      return;
-    }
+  const handleGuardar = () => {
+    // <-- ¡MODIFICAMOS handleGuardar!
+    setIsModalOpen(true); // <-- ¡AHORA SOLO ABRE EL MODAL!
+    console.log("Modal de confirmación abierto"); // Opcional: Para verificar que se abre el modal
+  };
 
-    // guardar factura objeto de ejemplo
-    // {
-    //   "nombre_cliente": "Cliente de Contado Ejemplo",
-    //   "observaciones": "Venta de contado, cliente regular", 
-    //   "metodo_pago": "Efectivo", 
-    //   "total_factura": 125.50,
-    //   "detalles_factura": [   
-    //     {
-    //       "producto_id": 1,     
-    //       "cantidad": 2,
-    //       "precio_unitario": 25.00,
-    //       "subtotal": 50.00   
-    //     },
-    //     {
-    //       "producto_id": 3,
-    //       "cantidad": 1,
-    //       "precio_unitario": 75.50,
-    //       "subtotal": 75.50
-    //     }
-    //   ]
-    // }
-
-    const data = {
-      nombre_cliente: nombreCliente,
-      cedula: cedula,
-      fecha: dateToYyyyMmDd(new Date()) + " " + dateToHhMmSs(new Date()),
-      total: total,
-      total_bs: totalBs,
-      detalles: productos.map((item) => {
-        return {
-          producto_id: item.id,
-          cantidad: item.cantidad,
-          precio: item.precio,
-          precio_bs: item.precio_bs,
-          subtotal: item.subtotal,
-        };
-      }),
+  const handleConfirmarGuardarFactura = async () => {
+    console.log("Usuario confirmó guardar la factura (Débito)"); // <-- ¡INDICAMOS QUE ES DÉBITO!
+    //ocultar el modal de confirmación
+    setIsModalOpen(false);
+    const facturaParaGuardar = {
+      nombre_cliente: clienteSeleccionado
+        ? clienteSeleccionado.nombre
+        : "Cliente Contado Ejemplo", // Usar nombre del cliente o "Cliente Contado Ejemplo" por defecto
+      observaciones: "Venta de contado", // Observaciones por defecto para DÉBITO
+      metodo_pago: "Efectivo", // Método de pago por defecto para DÉBITO (puedes ajustarlo si tienes más opciones de pago al contado)
+      total_factura: total, // El total de la factura (ya lo tienes en el estado 'total')
+      detalles_factura: productosFactura.map((producto) => ({
+        // Mapear productosFactura al formato de 'detalles_factura'
+        producto_id: producto.id,
+        cantidad: producto.cantidad,
+        precio_unitario: producto[tipoPrecioSeleccionadoFactura], // Usar el tipo de precio seleccionado para el precio unitario
+        subtotal: producto.subtotal, // Subtotal por producto (ya lo tienes calculado en 'producto.subtotal')
+      })),
     };
-    //enviar a la api
-    try {
-      console.log(data);
-      // Llamar a la API
-      await callApi("/venta", data);
 
-      // Si no hay error, mostrar alerta de éxito
-      if (!error) {
-        console.log(response);
-        Swal.fire({
-          title: "Venta guardada",
-          text: "La venta ha sido guardada con éxito",
-          icon: "success",
-          confirmButtonText: "Aceptar",
-        });
-      
-
-        // Reiniciar los valores del formulario
-        handleLimpiar();
-      }
-    } catch (err) {
-      // Si hay un error, mostrar alerta de error
-      Swal.fire({
-        title: "Error",
-        text: err.message || "Ocurrió un problema al guardar la venta",
-        icon: "error",
-        confirmButtonText: "Aceptar",
-      });
-    }
+    console.log(
+      "Datos de factura a enviar a la API (DÉBITO):",
+      facturaParaGuardar
+    ); // <-- ¡INDICAMOS QUE ES DÉBITO en el log!
+    callApi("/facturas/debito", facturaParaGuardar);
   };
 
+  useEffect(() => {
+    // <-- ¡NUEVO useEffect PARA MANEJAR LA RESPUESTA DE LA API!
+    if (response) {
+      // Si hay una respuesta EXITOSA de la API (response no es null)
+      console.log("Respuesta exitosa de la API:", response);
 
+      Swal.fire({
+        title: "¡Éxito!",
+        text: `Venta guardada con éxito`,
+        icon: "success",
+        confirmButtonText: "Aceptar",
+      });
+      // 🌈🌈🌈 ¡¡¡AQUÍ PUEDES AÑADIR ACCIONES ADICIONALES DESPUÉS DE GUARDAR LA FACTURA CON ÉXITO!!! 🌈🌈🌈
+      // Ejemplos:
+      // - Limpiar la factura (vaciar productosFactura, resetear total, etc.)
+      // - Redirigir a la pantalla de "Ver Facturas"
+      // - Imprimir la factura automáticamente
+      setProductosFactura([]); // Limpia la lista de productos de la factura
+      setTotal(0); // Resetea el total a 0
+    }
+
+    if (error) {
+      // Si hubo un ERROR al llamar a la API (error no es null)
+      console.error("Error al guardar la factura:", error);
+      Swal.error("Error al guardar la factura. Inténtalo de nuevo.", {
+        // Muestra un toast de ERROR
+        position: "top-right",
+        autoClose: 5000, // Duración un poco más larga para los errores
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      // 💔💔💔 ¡¡¡AQUÍ PUEDES AÑADIR LÓGICA ADICIONAL PARA MANEJAR EL ERROR!!! 💔💔💔
+      // Ejemplos:
+      // - Mostrar un mensaje de error más detallado al usuario
+      // - Registrar el error en un sistema de logs
+    }
+  }, [response, error]); // ¡¡¡DEPENDENCIAS: response y error para que se ejecute cuando cambien!!!
   return (
     <>
-      <div className="flex w-full  flex-col gap-2 justify-start items-start p-10  bg-base-100">
+      <div className="flex w-full  flex-col gap-2 justify-start items-start p-10  bg-base-100 relative">
         <header className="flex flex-col items-end justify-end w-full  px-5 rounded">
-        <h1 className="text-md text-left ">Datos del cliente</h1>
-
           <section className="flex flex-row gap-2 items-center justify-end w-full">
+            <small className="text-gray-500">Tipo de precio:</small>
 
-            <label className="input input-bordered input-sm flex items-center w-60 mb-4">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 16 16"
-                fill="currentColor"
-                className="h-4 w-4 opacity-70"
+            <div className="">
+              <select
+                className="select select-bordered select-sm w-full max-w-xs"
+                value={tipoPrecioSeleccionadoFactura} // <-- ¡Value CORRECTO - Ahora es el VALOR SELECCIONADO!
+                onChange={handleTipoPrecioChange} // <-- ¡Añadir el onChange!
               >
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-              </svg>
-              <input
-                type="text"
-                className="grow"
-                placeholder="Jose Perez"
-                required
-                onChange={(e) => setNombreCliente(e.target.value)}
-              />
-            </label>
-            <label className="input input-bordered input-sm flex items-center w-60 mb-4">
+                <option disabled>Precio</option>
+                {tiposPrecioFacturaOpciones.map(
+                  (
+                    tipo // <-- ¡Mapeando el ARRAY DE OPCIONES (CORRECTO)!
+                  ) => (
+                    <option key={tipo} value={tipo}>
+                      {tipo}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+            {clienteSeleccionado &&
+              clienteSeleccionado.nombre && ( //  <-- ¡Añadimos el elemento small aquí!
+                <p className="text-sm">
+                  Cliente:
+                  <span className="font-semibold">
+                    {clienteSeleccionado.nombre}
+                  </span>
+                </p>
+              )}
+            <label className="input input-bordered input-sm flex items-center w-60 ">
               CI
               <input
                 type="text"
                 className="pl-2 grow"
                 placeholder="V27939124"
-                onChange={(e) => setCedula(e.target.value)}
+                list="clientes-list" // ¡Enlaza el input con el datalist por su ID!
+                onChange={(e) => {
+                  //  <--  ¡MODIFICAMOS el onChange!
+                  setCedulaHook(e.target.value); // Primero, actualizamos la cédula en el hook para la búsqueda
+
+                  // Buscar el cliente seleccionado en el array 'clientes'
+                  const clienteEncontrado = clientes?.find(
+                    (cliente) => cliente.cedula === e.target.value
+                  ); // Usamos 'clientes?' para evitar errores si 'clientes' es null/undefined
+                  setClienteSeleccionado(clienteEncontrado || null); // Actualizamos 'clienteSeleccionado' con el cliente encontrado o null si no hay coincidencia
+                }} // ¡Sigue usando setCedulaHook!
                 required
               />
+              <datalist id="clientes-list">
+                {/*  <-  ¡ID del datalist, debe coincidir con 'list' del input! */}
+                {isLoadingCliente && <option>Cargando clientes...</option>}
+                {/* Opción de carga */}
+                {errorCliente && <option>Error: {errorCliente}</option>}
+                {/* Opción de error */}
+                <option value="cliente particular">Cliente particular</option>
+                {clientes &&
+                  clientes.map((cliente) => (
+                    <option key={cliente.id} value={cliente.cedula}>
+                      {/* 'value' es lo que se inserta en el input al seleccionar */}
+                      {cliente.nombre}
+                      {/* Texto visible en la lista desplegable */}
+                    </option>
+                  ))}
+              </datalist>
             </label>
           </section>
         </header>
 
-        <div className="overflow-x-auto w-full border border-slate-400 rounded-lg shadow-md">
-          {productos.length > 0 ? (
+        <div className="overflow-x-auto w-full border rounded-lg shadow-md">
+          {productosFactura.length > 0 ? (
             <table className="table">
-              <thead>
+              <thead className="bg-base-100">
                 <tr>
                   <th>Quitar</th>
                   <th>Producto</th>
@@ -248,17 +395,16 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
                 </tr>
               </thead>
               <tbody>
-                {productos.map((item, index) => (
+                {productosFactura.map((item, index) => (
                   <tr key={item.id}>
                     <td>
                       <button
                         className="btn btn-outline btn-error btn-sm"
-                        onClick={() => eliminarProducto(item.id)} // Llamar a la función eliminarProducto
+                        onClick={() => quitarProducto(item.id)} // Llamar a la función eliminarProducto
                       >
                         X
                       </button>
                     </td>
-
                     <td>
                       {item.nombre}
                       <small className="text-sm text-gray-500">
@@ -267,13 +413,14 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
                       </small>
                     </td>
                     <td>
-                      ${item.precio.toFixed(2)}
-                      <small className="text-sm text-gray-500">
-                        <br />
-                        {item.precio_bs}Bs.
+                      ${item[tipoPrecioSeleccionadoFactura].toFixed(2)}
+                      <br />
+                      <small>
+                        {item[tipoPrecioSeleccionadoFactura].toFixed(2) *
+                          dolarToday}
                       </small>
                     </td>
-
+                    {/* <-- ¡PRECIO UNITARIO DINÁMICO! */}
                     <td className="flex">
                       <div className="join w-full">
                         <button
@@ -284,10 +431,11 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
                         </button>
                         <input
                           type="number"
-                          className="input input-bordered input-sm join-item max-w-16"
-                          value={item.cantidad}
-                          min={1}
+                          className="input input-bordered input-sm join-item max-w-20"
+                          value={item.cantidad.toFixed(2)}
+                          min="0" // o "0.1" si no permites cantidad 0
                           max={item.stock}
+                          step="0.01" // <-- ¡AÑADIR step="0.1" PARA DECIMALES!
                           onChange={(e) => handleCantidad(e, item.id)}
                         />
                         <button
@@ -302,14 +450,15 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
                       ${item.subtotal.toFixed(2)}
                       <small className="text-sm text-gray-500">
                         <br />
-                        {(item.precio_bs * item.cantidad).toFixed(2)}Bs.
+                        {(item.subtotal * dolarToday).toFixed(2)}
+                        Bs.
                       </small>
                     </td>
                   </tr>
                 ))}
 
                 {/* Fila del total */}
-                <tr className="bg-slate-50">
+                <tr className="bg-base-200">
                   <th colSpan="4" className="text-right">
                     <h1 className="text-2xl font-bold mb-4 text-right">
                       Total
@@ -319,7 +468,7 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
                     ${total.toFixed(2)}
                     <small className="text-sm text-gray-500">
                       <br />
-                      {totalBs}Bs.
+                      Bs. {(total * dolarToday).toFixed(2)}
                     </small>
                   </td>
                 </tr>
@@ -327,21 +476,25 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
             </table>
           ) : (
             <div className="flex flex-col justify-center items-center">
-              <h1 className="text-2xl font-bold text-center text-gray-400">
-                Factura Vacia
-              </h1>
-              <small className="text-sm text-gray-400">
-                Ver todas las facturas en
+              <small className="text-center">
+                Seleccione un producto para agregar a la factura
               </small>
-              <a href="/ventas" className="link link-neutral text-center">
-                ventas
-              </a>
             </div>
           )}
         </div>
-        <div className="flex flex-row justify-end w-full gap-5">
-          <button className="btn btn-md  " onClick={handleLimpiar}>
-            Limpiar
+        <div className="flex flex-row justify-end w-full gap-5 flex-wrap">
+          <label className="label cursor-pointer">
+            <span className="label-text">Factura a Crédito?</span>
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm"
+              checked={esFacturaCredito} // <-- ¡Conectado al estado esFacturaCredito!
+              onChange={(e) => setEsFacturaCredito(e.target.checked)} // <-- ¡Actualiza el estado al cambiar!
+            />
+          </label>
+
+          <button className="btn btn-md" onClick={handleLimpiar}>
+            Limpiar factura
           </button>
           <button
             className={`btn btn-primary btn-md font-bold `}
@@ -350,9 +503,99 @@ const Factura = ({ productos = [], onProductosSeleccionados }) => {
             {loading ? (
               <span className="loading loading-spinner loading-md"></span>
             ) : (
-              <span>Guardar factura</span>
+              <span>Facturar a debito</span>
             )}
           </button>
+
+          {/*  ¡¡¡MODAL DE CONFIRMACIÓN!!! */}
+          <ModalCheckbox
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            title="Confirmar Factura?"
+            modalId="confirmar-factura-modal"
+          >
+            <div className="mt-4 space-y-2 ">
+              <p>
+                <span className="font-semibold">Nombre del cliente:</span>
+                {clienteSeleccionado
+                  ? clienteSeleccionado.nombre
+                  : "Cliente Contado"}
+              </p>
+              <p>
+                <span className="font-semibold">Cédula:</span>
+                {clienteSeleccionado
+                  ? clienteSeleccionado.cedula
+                  : "Cliente Contado"}
+              </p>
+              {/* Añadido para mostrar la cédula */}
+              <p>
+                <span className="font-semibold">Tipo de Precio:</span>
+                {tipoPrecioSeleccionadoFactura}
+              </p>
+              {/* Añadido para mostrar el tipo de precio */}
+              <p>
+                <span className="font-semibold">Fecha:</span>
+                {dateToDdMmYyyy(new Date())}
+              </p>
+              {/* Añadido para mostrar la fecha */}
+            </div>
+
+            {/* Tabla de productos */}
+            <div className="overflow-x-auto mt-4">
+              <table className="table table-xs">
+                <thead className="bg-base-100">
+                  <tr>
+                    <th className="py-2 px-4 text-left">Producto</th>
+                    <th className="py-2 px-4 text-center">Cantidad</th>
+                    <th className="py-2 px-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {productosFactura.map((item, index) => (
+                    <tr key={index} className="">
+                      <td className="py-2 px-4">{item.nombre}</td>
+                      <td className="py-2 px-4 text-center">
+                        {item.cantidad.toFixed(2)}
+                      </td>
+                      <td className="py-2 px-4 text-right">
+                        ${item.subtotal.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Total Factura */}
+            <div className="mt-4 flex justify-end text-lg font-semibold p-2 gap-2">
+              <span className="font-semibold uppercase">Total Factura:</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
+
+            {/* Botones de Acción */}
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                className="btn btn-neutral"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleConfirmarGuardarFactura}
+              >
+                {/* ¡Mantenemos onClick para "Confirmar"! */}
+                Confirmar y Guardar Factura
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={handleConfirmarGuardarFactura}
+              >
+                {/* ¡Añadido onClick para "Imprimir"! */}
+                Imprimir
+              </button>
+            </div>
+          </ModalCheckbox>
         </div>
       </div>
     </>

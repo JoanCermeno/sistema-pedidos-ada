@@ -11,7 +11,7 @@ class Cliente {
   }
 
   async buscarPorCedula(cedula) {
-    const cliente = await this.knex("clientes").where("cedula", cedula).first();
+    const cliente = await this.knex("clientes").where("cedula","like", `%${cedula}%`);
     return cliente;
   }
   async obtenerPorId(id) {

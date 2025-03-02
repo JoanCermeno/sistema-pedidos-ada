@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import fs from "fs";
+import tailwindcss from '@tailwindcss/vite'
+
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,5 +14,5 @@ export default defineConfig({
     host: "0.0.0.0", // Para que sea accesible desde otros dispositivos
     port: 5173, // O el puerto que prefieras
   },
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
 });

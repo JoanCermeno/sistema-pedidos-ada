@@ -1,26 +1,34 @@
-// src/hooks/useBuscarClientePorCedula.js
+// src/hooks/useBuscarclientesPorCedula.js
 import { useState, useEffect } from 'react';
 
-function useBuscarClientePorCedula() {
+function useBuscarclientesPorCedula() {
   const [cedula, setCedula] = useState(''); // Estado interno del hook para la cédula
-  const [cliente, setCliente] = useState(null); // Estado para la información del cliente
+  const [clientes, setclientes] = useState(null); // Estado para la información del clientes
   const [error, setError] = useState(''); // Estado para mensajes de error
   const [isLoading, setIsLoading] = useState(false); // Estado para indicar carga (opcional)
-
+  const baseURL = import.meta.env.VITE_API_URL;  // URL base de la API
+  const token = localStorage.getItem('token'); // Obtener token de autenticación
   useEffect(() => {
     if (cedula) { // Solo hacer la búsqueda si la cédula no está vacía
       setError(''); // Limpiar errores previos
-      setCliente(null); // Limpiar cliente anterior
+      setclientes(null); // Limpiar clientes anterior
       setIsLoading(true); // Indicar que la búsqueda está en curso
 
-      const buscarCliente = async () => {
+      const buscarclientes = async () => {
+
         try {
-          const response = await fetch(`/api/clientes/buscar-por-cedula/${cedula}`); // ¡Asegúrate de que la ruta sea correcta!
+          const response = await fetch(`${baseURL}/cliente/${cedula}`,{
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: token ? `${token}` : '', // Incluir token si existe
+            },
+          }); // ¡Asegúrate de que la ruta sea correcta!
           if (!response.ok) {
             setIsLoading(false); // Fin de la carga (incluso si hubo error)
             if (response.status === 404) {
-              setCliente(null);
-              setError('Cliente no encontrado. Por favor, verifica la cédula o añade un nuevo nombre de cliente.');
+              setclientes(null);
+              setError('clientes no encontrado. Por favor, verifica la cédula o añade un nuevo nombre de clientes.');
             } else {
               throw new Error(`Error HTTP! estado: ${response.status}`);
             }
@@ -28,18 +36,18 @@ function useBuscarClientePorCedula() {
           }
           const data = await response.json();
           setIsLoading(false); // Fin de la carga con éxito
-          setCliente(data.cliente); // Guardar la información del cliente
+          setclientes(data); // Guardar la información del clientes
         } catch (error) {
           setIsLoading(false); // Fin de la carga (incluso si hubo error)
-          console.error('Error al buscar cliente por cédula en custom hook:', error);
-          setError('Error al buscar cliente. Por favor, intenta de nuevo.');
-          setCliente(null);
+          console.error('Error al buscar clientes por cédula en custom hook:', error);
+          setError('Error al buscar clientes. Por favor, intenta de nuevo.');
+          setclientes(null);
         }
       };
 
-      buscarCliente();
+      buscarclientes();
     } else {
-      setCliente(null);
+      setclientes(null);
       setError('');
       setIsLoading(false); // Asegurarse de que isLoading esté en false si la cédula se vacía
     }
@@ -49,10 +57,10 @@ function useBuscarClientePorCedula() {
   return {
     cedula,
     setCedulaHook: setCedula, // Retornar setCedula como setCedulaHook para evitar conflicto de nombres en el componente
-    cliente,
+    clientes,
     error,
     isLoading,
   };
 }
 
-export default useBuscarClientePorCedula;
+export default useBuscarclientesPorCedula;

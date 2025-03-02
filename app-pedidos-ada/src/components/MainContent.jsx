@@ -35,8 +35,8 @@ const MainContent = () => {
         </div>
 
         <div className="card shadow-lg  text-accent-content hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out" onClick={ () => navigate("/facturar")}>
-          <div className="card-body ">
-            <h2 className="card-title  font-bold">Facturar</h2>
+          <div className="card-body  bg-base-200 border-left-4 border-accent-content">
+            <h2 className="card-title font-bold">Facturar</h2>
             <p className="">Realizar una venta de productos.</p> 
           </div>
         </div>
