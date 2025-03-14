@@ -62,7 +62,7 @@ const CrearFactura = () => {
   return (
     <div>
       <div className="flex flex-row justify-left w-full px-2">
-        <div className="flex w-[40%] flex-col gap-2 justify-center px-4 pt-4 rounded border border-base-300 shadow-lg bg-base-200">
+        <div className="flex w-[40%] flex-col gap-2 justify-center px-4 pt-4 rounded border border-base-300 shadow-lg bg-base-200 ">
           <h1 className="text-2xl font-bold mb-4 text-center">
             Productos Disponibles
           </h1>
@@ -70,11 +70,11 @@ const CrearFactura = () => {
           <input
             type="text"
             placeholder="Buscar por Nombre"
-            className="input input-bordered input-sm"
+            className="input input-bordered input-sm w-full"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          <div className="overflow-auto max-h-screen">
+          <div className="overflow-auto max-h-screen p-2">
             <table className="table w-full">
               {/* head */}
               <thead>

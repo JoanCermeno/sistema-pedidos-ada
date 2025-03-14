@@ -21,11 +21,11 @@ const options = {
   schema, // Esquema de validación
 };
 
-// Leer los certificados
-const httpsOptions = {
-  key: fs.readFileSync("./../certs/localhost+3-key.pem"),
-  cert: fs.readFileSync("./../certs/localhost+3.pem"),
-};
+// Leer los certificados anulando los certificados
+// const httpsOptions = {
+//   key: fs.readFileSync("./../certs/localhost+3-key.pem"),
+//   cert: fs.readFileSync("./../certs/localhost+3.pem"),
+// };
 
 // Crear el servidor con HTTPS
 const fastify = Fastify({
@@ -39,7 +39,7 @@ const fastify = Fastify({
       },
     },
   },
-  https: httpsOptions,
+  // https: httpsOptions,
 });
 
 //cors

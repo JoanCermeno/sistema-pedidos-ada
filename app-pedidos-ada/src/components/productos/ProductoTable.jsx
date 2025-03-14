@@ -176,7 +176,7 @@ const ProductosTable = () => {
         <div className="overflow-y-hidden pb-20">
           <table className="table table-pin-rows">
             <thead>
-              <tr className="text-orange-950 text-md font-bold tracking-wide">
+              <tr className="text-md font-bold tracking-wide">
                 <td>ID</td>
                 <th>Nombre y descripcion</th>
                 <th>Costo $ / Bs</th>
@@ -205,28 +205,28 @@ const ProductosTable = () => {
                       </small>
                     </td>
 
-                    <td>
+                    <td className="text-center">
                       {producto.precio_compra}$ <br />
                       <small className="text-sm text-gray-500">
                         {producto.precio_compra_bs}Bs.
                       </small>
                     </td>
 
-                    <td>
+                    <td className="text-center">
                       {producto.precio_minorista}$ <br />
-                      <small className="text-sm text-gray-500">
+                      <small className="text-sm  text-gray-500">
                         {producto.precio_minorista_bs}Bs.
                       </small>
                     </td>
 
-                    <td>
+                    <td className="text-center">
                       {producto.precio_mayorista}$ <br />
                       <small className="text-sm text-gray-500">
                         {producto.precio_mayorista_bs}Bs.
                       </small>
                     </td>
 
-                    <td>{producto.stock}</td>
+                    <td className={`text-center ${producto.stock <= 5 ? 'bg-amber-50' : ''} `}>{producto.stock}</td>    
 
                     <td>
                       <DropdownActions

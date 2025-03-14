@@ -1,56 +1,56 @@
 import React from "react";
-import { Routes, Route ,useNavigate} from "react-router-dom";
-
-
+import { useNavigate } from "react-router-dom";
 
 const MainContent = () => {
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
+    // Array de datos para las funciones principales
+    const funcionesPrincipales = [
+        {
+            titulo: "Inventario.",
+            descripcion: "Lista de productos, con sus cantidades y precios.",
+            ruta: "/inventario",
+          
+        },
+        {
+            titulo: "Actualizador de precios",
+            descripcion: "Que la inflación no te haga perder más dinero actualiza el precio del dólar hoy.",
+            ruta: "/precios",
+        
+        },
+        {
+            titulo: "Ventas",
+            descripcion: "Resumen de las ventas realizadas por los vendedores.",
+            ruta: "/ventas",
+   
+        },
+        {
+            titulo: "Facturar",
+            descripcion: "Realizar una venta de productos.",
+            ruta: "/facturar",
+      
+        },
+    ];
 
-
-
-  return (
-    <div className="flex-1 p-6">
-      <h1 className="text-4xl font-bold mx-4 mb-5 ">Funciones principales</h1> 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 ">
-        <div className="card shadow-lg   hover:cursor-pointer hover:shadow-2xl  hover:scale-105 transition ease-out">
-          <div className="card-body " onClick={ () => navigate("/inventario")}>
-            <h2 className="card-title  font-bold ">Inventario.</h2>
-            <p>Lista de productos, con sus canidades y precios.</p>
-          </div>
+    return (
+        <div className="flex-1 p-6">
+            <h1 className="text-4xl font-bold mx-4 mb-5">Funciones principales</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 ">
+                {funcionesPrincipales.map((funcion, index) => (
+                    <div
+                        key={index}
+                        className={`card shadow-lg hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out border-l-5 border-indigo-500 bg-indigo-50`}
+                        onClick={() => navigate(funcion.ruta)}
+                    >
+                        <div className="card-body ">
+                            <h2 className={`card-title font-bold `}>{funcion.titulo}</h2>
+                            <p>{funcion.descripcion}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
-        <div className="card shadow-lg hover:cursor-pointer hover:shadow-2xl  hover:scale-105 transition ease-out" onClick={ () => navigate("/precios")}>
-          <div className="card-body">
-            <h2 className="card-title  font-bold">Actualizador de precios</h2>
-            <p>Que la inflacion no te haga perder mas dienero
-              actualiza el precio del dolar hoy.
-            </p>
-          </div>
-        </div>
-        <div className="card shadow-lg  text-accent-content hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out" onClick={ () => navigate("/ventas")}>
-          <div className="card-body ">
-            <h2 className="card-title  font-bold">Ventas</h2>
-            <p className="">Resumen de las ventas realizadas por los vendedores.</p>
-          </div>
-        </div>
-
-        <div className="card shadow-lg  text-accent-content hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out" onClick={ () => navigate("/facturar")}>
-          <div className="card-body  bg-base-200 border-left-4 border-accent-content">
-            <h2 className="card-title font-bold">Facturar</h2>
-            <p className="">Realizar una venta de productos.</p> 
-          </div>
-        </div>
-
-
-        <div className="card shadow-lg  text-accent-content hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out" onClick={ () => navigate("/facturar")}>
-          <div className="card-body ">
-            <h2 className="card-title  font-bold">Pendientes por cobrar</h2>
-            <p className="">Ver los clientes que estan pendiente por pagos.</p> 
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default MainContent;

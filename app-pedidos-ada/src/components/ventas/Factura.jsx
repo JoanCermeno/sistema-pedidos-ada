@@ -3,7 +3,7 @@ import { usePostRequest } from "../../hooks/usePostRequest";
 import { dateToDdMmYyyy } from "../../utils/dateUtil";
 import Swal from "sweetalert2";
 import ModalCheckbox from "../modales/ModalCheckbox";
-import useBuscarClientePorCedula from "../../hooks/useBuscarClientePorCedula";
+import BuscadorCedulaDinamico from "./BuscadorCedulaDinamico";
 
 const Factura = ({ productoToAdd }) => {
   const dolarToday = localStorage.getItem("dolar");
@@ -88,12 +88,15 @@ const Factura = ({ productoToAdd }) => {
     }
   }, [tipoPrecioSeleccionadoFactura, dolarToday]); // Depende de tipoPrecioSeleccionadoFactura y dolarToday
 
-  const {
-    clientes,
-    error: errorCliente,
-    isLoading: isLoadingCliente,
-    setCedulaHook,
-  } = useBuscarClientePorCedula();
+
+  //est afuncion es una funcion que permite recibir el cliente desde el componente hijo
+  // Y actualiza apartir del componnte hijo al estado del componente padre
+  const handeleClienteSeleccionado = (cliente) => {
+    setClienteSeleccionado(cliente);
+    console.log("Cliente seleccionado:", cliente);
+  };  
+
+
 
   const handleTipoPrecioChange = (event) => {
     setTipoPrecioSelecionadoFactura(event.target.value); // <-- ¡USAR setTipoPrecioSelecionadoFactura CORRECTAMENTE!
@@ -163,7 +166,7 @@ const Factura = ({ productoToAdd }) => {
     setProductosFactura((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
-          let nuevaCantidad = item.cantidad + 0.1; // Incrementar en 0.1
+          let nuevaCantidad = item.cantidad + 1; 
 
           if (nuevaCantidad > item.stock) {
             nuevaCantidad = item.stock; // Limitar a stock máximo
@@ -192,7 +195,7 @@ const Factura = ({ productoToAdd }) => {
     setProductosFactura((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
-          let nuevaCantidad = item.cantidad - 0.1; // Decrementar en 0.1
+          let nuevaCantidad = item.cantidad - 1; 
 
           if (nuevaCantidad < 0.1 && nuevaCantidad !== 0) {
             // Permitir 0, pero no valores menores a 0.1 (excepto 0)
@@ -343,46 +346,12 @@ const Factura = ({ productoToAdd }) => {
                   </span>
                 </p>
               )}
-            <label className="input input-bordered input-sm flex items-center w-60 ">
-              CI
-              <input
-                type="text"
-                className="pl-2 grow"
-                placeholder="V27939124"
-                list="clientes-list" // ¡Enlaza el input con el datalist por su ID!
-                onChange={(e) => {
-                  //  <--  ¡MODIFICAMOS el onChange!
-                  setCedulaHook(e.target.value); // Primero, actualizamos la cédula en el hook para la búsqueda
-
-                  // Buscar el cliente seleccionado en el array 'clientes'
-                  const clienteEncontrado = clientes?.find(
-                    (cliente) => cliente.cedula === e.target.value
-                  ); // Usamos 'clientes?' para evitar errores si 'clientes' es null/undefined
-                  setClienteSeleccionado(clienteEncontrado || null); // Actualizamos 'clienteSeleccionado' con el cliente encontrado o null si no hay coincidencia
-                }} // ¡Sigue usando setCedulaHook!
-                required
-              />
-              <datalist id="clientes-list">
-                {/*  <-  ¡ID del datalist, debe coincidir con 'list' del input! */}
-                {isLoadingCliente && <option>Cargando clientes...</option>}
-                {/* Opción de carga */}
-                {errorCliente && <option>Error: {errorCliente}</option>}
-                {/* Opción de error */}
-                <option value="cliente particular">Cliente particular</option>
-                {clientes &&
-                  clientes.map((cliente) => (
-                    <option key={cliente.id} value={cliente.cedula}>
-                      {/* 'value' es lo que se inserta en el input al seleccionar */}
-                      {cliente.nombre}
-                      {/* Texto visible en la lista desplegable */}
-                    </option>
-                  ))}
-              </datalist>
-            </label>
+    <BuscadorCedulaDinamico 
+    onClienteSeleccionado={handeleClienteSeleccionado} />
           </section>
         </header>
 
-        <div className="overflow-x-auto w-full border rounded-lg shadow-md">
+        <div className="overflow-x-auto w-full  rounded-lg shadow-md">
           {productosFactura.length > 0 ? (
             <table className="table">
               <thead className="bg-base-100">

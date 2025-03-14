@@ -94,7 +94,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
     // agregar el producto
 
     const resultado = await agregarProducto(productoActualizado);
-    console.log(resultado);
+
     if (resultado) {
       // Llamamos a onClose después de la alerta
       setMostrarModal(false); // Reiniciamos el estado del agregar producto para limpiar los campos
@@ -131,8 +131,8 @@ const AgregarProducto = ({ onProductoAgregado }) => {
 
       {mostrarModal && (
         <div className="modal modal-open">
-          <div className="modal-box">
-            <form onSubmit={handleSubmit}>
+          <div className="modal-box bg-base-200 ">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 ">
               <div className="form-control my-4 flex-row justify-between">
                 <label className="label">
                   Código de Barras
@@ -150,37 +150,39 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                   </p>
                 )}
               </div>
-              <div className="form-control mb-2">
+              <div className="form-control">
                 <label className="label">Nombre del Producto</label>
                 <input
                   type="text"
                   name="nombre"
-                  className="input input-bordered "
+                  className="input input-bordered w-full"
                   value={producto.nombre}
                   onChange={handleChange}
                   required
                   placeholder="Producto"
                 />
               </div>
-              <div className="form-control mb-5">
+              <div className="form-control">
                 <label className="label">Descripción</label>
                 <textarea
                   type="text"
                   name="descripcion"
-                  className="textarea textarea-primary "
+                  className="textarea w-full"
                   value={producto.descripcion}
                   onChange={handleChange}
                   required
                   placeholder="Ejemplo. Caja de 100 unidades"
                 />
               </div>
+              
+              <div className="form-control flex flex-row justify-between flex-wrap gap-4">
+                
 
-              <div className="form-control flex flex-row justify-between flex-wrap">
-                <div className="flex flex-col ">
-                  <label className="label text-slate-500">
+              <div className="flex flex-col gap-2">
+                  <label className="label ">
                     Costo del Producto ($)
-                  </label>{" "}
-                  {/* Etiqueta más descriptiva */}
+                  </label>
+
                   <input
                     type="number"
                     name="precio_compra" // Usar precio_compra para el precio de compra en dólares
@@ -190,20 +192,17 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                     value={producto.precio_compra}
                     onChange={handleChange}
                     required
-                    placeholder="0$"
+                    placeholder="1$"
                   />
                 </div>
 
-                <div className="flex flex-col">
-                  <label className="label text-slate-500 ">(Bs)</label>{" "}
-                  {/* Etiqueta más descriptiva */}
+                <div className="flex flex-col gap-2">
+                  <label className="label">(Costo en Bs)</label>     
                   <input
                     type="number"
                     name="precio_compra_bs" // Usar precio_compra_bs para el precio de compra en bolívares
                     min={0}
-                    step="0.1"
-                    className="input input-disabled  text-right"
-                    value={producto.precio_compra_bs}
+                    className="input text-right"
                     readOnly={true}
                     onChange={handleChange}
                     disabled
@@ -212,11 +211,11 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                     } // Usar precio_compra para calcular placeholder
                   />
                 </div>
-              </div>
-              <div className="form-control flex flex-row justify-between flex-wrap">
+
+
                 <div className="flex flex-col gap-2">
                   <label className="label text-slate-500">
-                    Precio venta al detal ($)
+                    Precio de venta ($)
                   </label>
                   {/* Nueva etiqueta Precio Detal */}
                   <input
@@ -231,7 +230,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                     placeholder="1$"
                   />
                   <progress
-                    className="progress progress-accent w-56"
+                    className="progress progress-accent"
                     value={margenMinorista}
                     max="100"
                   ></progress>
@@ -241,13 +240,12 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="label text-slate-500 "> (Bs)</label>{" "}
+                  <label className="label text-slate-500 "> (Venta en Bs)</label>
                   {/* Nueva etiqueta Precio Detal */}
                   <input
                     type="number"
                     name="precio_minorista_bs" // Nuevo campo para precio minorista en bolívares
                     min={0}
-                    step="0.1"
                     className="input input-disabled text-right "
                     value={producto.precio_minorista_bs}
                     onChange={handleChange}
@@ -276,7 +274,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                     placeholder="2$"
                   />
                   <progress
-                    className="progress w-56 progress-accent "
+                    className="progress progress-accent "
                     value={margenMayorista}
                     max="100"
                   ></progress>
@@ -284,7 +282,7 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="label text-slate-500 ">(Bs)</label>{" "}
+                  <label className="label text-slate-500 ">(Al mayor en Bs)</label>{" "}
                   {/* Nueva etiqueta Precio Mayor */}
                   <input
                     type="number"
@@ -302,15 +300,15 @@ const AgregarProducto = ({ onProductoAgregado }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col ">
+              <div className="flex flex-col gap-2 w-full  ">
                 <label className="label text-slate-500">Unidades</label>
                 <input
                   type="number"
                   name="stock"
-                  step="0.01"
+                  step="0.1"
                   limit={10000}
                   min={0}
-                  className="input input-bordered  text-right"
+                  className="input input-bordered  text-right w-full"
                   value={producto.stock}
                   onChange={handleChange}
                   required
