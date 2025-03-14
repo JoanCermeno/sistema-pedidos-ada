@@ -4,7 +4,7 @@ import { useGetRequest } from '../../hooks/useGetRequest'; // Asegúrate de la r
 
 const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
     const [inputValue, setInputValue] = useState('');
-    const [opcionesCedulas, setOpcionesCedulas] = useState();
+    const [opcionesCedulas, setOpcionesCedulas] = useState([]);
     const [cedulaSeleccionada, setCedulaSeleccionada] = useState(null);
     const { callApiGet, loading, error } = useGetRequest();
 
@@ -18,13 +18,15 @@ const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
                     label: `${cliente.nombre} (${cliente.cedula})`
                 }));
                 setOpcionesCedulas(opcionesFormateadas);
+                console.log(data)
+              
             } catch (error) {
                 console.error("Error al cargar clientes:", error);
             }
         };
 
         cargarClientes();
-    }, [callApiGet]); // Dependencia en callApiGet para que se ejecute si la función cambia (aunque en este caso no debería)
+    }, [cedulaSeleccionada]); // Dependencia en callApiGet para que se ejecute si la función cambia (aunque en este caso no debería)
 
     const handleInputChange = (newValue) => {
         setInputValue(newValue);
@@ -34,12 +36,14 @@ const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
     const handleSelectChange = (selectedOption) => {
         if (onClienteSeleccionado) {
             onClienteSeleccionado(selectedOption);
+            setCedulaSeleccionada(selectedOption);
         }
 
         console.log('Cliente seleccionado:', selectedOption);
     };
 
     const filtrarOpciones = () => {
+        console.log('Opciones:', opcionesCedulas);
         return opcionesCedulas.filter(opcion =>
             opcion.value.toLowerCase().includes(inputValue.toLowerCase()) ||
             opcion.label.toLowerCase().includes(inputValue.toLowerCase())
@@ -56,7 +60,6 @@ const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
 
     return (
         <div>
-            <h2>Buscador Dinámico de Cédulas</h2>
             <Select
                 value={cedulaSeleccionada}
                 onInputChange={handleInputChange}
@@ -65,9 +68,6 @@ const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
                 isSearchable={true}
                 placeholder="Ingrese la cédula..."
             />
-            {cedulaSeleccionada && (
-                <p>Cédula seleccionada: {cedulaSeleccionada.label}</p>
-            )}
         </div>
     );
 };

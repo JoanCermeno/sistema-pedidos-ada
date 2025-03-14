@@ -22,6 +22,7 @@ const Factura = ({ productoToAdd }) => {
   const [productosFactura, setProductosFactura] = useState([]); // <-- ¡NUEVO ESTADO LOCAL!
   const [isModalOpen, setIsModalOpen] = useState(false); // <-- para EL MODAL!
   const [esFacturaCredito, setEsFacturaCredito] = useState(false); // <-- ¡NUEVO ESTADO PARA EL CHECKBOX!
+
   useEffect(() => {
     if (productoToAdd) {
       console.warn("Producto recibido en Factura:", productoToAdd);
@@ -46,6 +47,7 @@ const Factura = ({ productoToAdd }) => {
           });
           return prevState;
         } else {
+          console.log("Producto no existe en la lista");
           const productoParaFactura = {
             ...productoToAdd,
             cantidad: 1,
@@ -88,15 +90,12 @@ const Factura = ({ productoToAdd }) => {
     }
   }, [tipoPrecioSeleccionadoFactura, dolarToday]); // Depende de tipoPrecioSeleccionadoFactura y dolarToday
 
-
   //est afuncion es una funcion que permite recibir el cliente desde el componente hijo
   // Y actualiza apartir del componnte hijo al estado del componente padre
   const handeleClienteSeleccionado = (cliente) => {
     setClienteSeleccionado(cliente);
     console.log("Cliente seleccionado:", cliente);
-  };  
-
-
+  };
 
   const handleTipoPrecioChange = (event) => {
     setTipoPrecioSelecionadoFactura(event.target.value); // <-- ¡USAR setTipoPrecioSelecionadoFactura CORRECTAMENTE!
@@ -166,7 +165,7 @@ const Factura = ({ productoToAdd }) => {
     setProductosFactura((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
-          let nuevaCantidad = item.cantidad + 1; 
+          let nuevaCantidad = item.cantidad + 1;
 
           if (nuevaCantidad > item.stock) {
             nuevaCantidad = item.stock; // Limitar a stock máximo
@@ -195,7 +194,7 @@ const Factura = ({ productoToAdd }) => {
     setProductosFactura((prevState) => {
       return prevState.map((item) => {
         if (item.id === id) {
-          let nuevaCantidad = item.cantidad - 1; 
+          let nuevaCantidad = item.cantidad - 1;
 
           if (nuevaCantidad < 0.1 && nuevaCantidad !== 0) {
             // Permitir 0, pero no valores menores a 0.1 (excepto 0)
@@ -314,12 +313,12 @@ const Factura = ({ productoToAdd }) => {
   }, [response, error]); // ¡¡¡DEPENDENCIAS: response y error para que se ejecute cuando cambien!!!
   return (
     <>
-      <div className="flex w-full  flex-col gap-2 justify-start items-start p-10  bg-base-100 relative">
+      <div className="flex w-full  flex-col gap-2 justify-start items-start p-10  relative">
         <header className="flex flex-col items-end justify-end w-full  px-5 rounded">
           <section className="flex flex-row gap-2 items-center justify-end w-full">
             <small className="text-gray-500">Tipo de precio:</small>
 
-            <div className="">
+            <div>
               <select
                 className="select select-bordered select-sm w-full max-w-xs"
                 value={tipoPrecioSeleccionadoFactura} // <-- ¡Value CORRECTO - Ahora es el VALOR SELECCIONADO!
@@ -346,14 +345,15 @@ const Factura = ({ productoToAdd }) => {
                   </span>
                 </p>
               )}
-    <BuscadorCedulaDinamico 
-    onClienteSeleccionado={handeleClienteSeleccionado} />
+            <BuscadorCedulaDinamico
+              onClienteSeleccionado={handeleClienteSeleccionado}
+            />
           </section>
         </header>
 
         <div className="overflow-x-auto w-full  rounded-lg shadow-md">
           {productosFactura.length > 0 ? (
-            <table className="table">
+            <table className="table bg-base-100">
               <thead className="bg-base-100">
                 <tr>
                   <th>Quitar</th>

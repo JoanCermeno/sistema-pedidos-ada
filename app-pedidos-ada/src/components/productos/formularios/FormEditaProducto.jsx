@@ -106,7 +106,7 @@ const EditarProducto = ({ productoToEditar, onClose }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="form-control my-4 flex flex-row justify-between">
+      <div className="form-control my-4 flex flex-row justify-between ">
         <label className="label">
           Código de Barras <span className="text-gray-500">(Opcional)</span>
         </label>
@@ -133,12 +133,12 @@ const EditarProducto = ({ productoToEditar, onClose }) => {
           placeholder={productoToEditar?.nombre || "Nombre del Producto"} // Placeholder con valor actual o texto por defecto
         />
       </div>
-      <div className="form-control mb-5">
+      <div className="form-control mb-5 flex flex-col">
         <label className="label">Descripción</label>
         <textarea
           type="text"
           name="descripcion"
-          className="textarea textarea-primary"
+          className="textarea textarea-primary w-full"
           value={producto.descripcion}
           onChange={handleChange}
           placeholder={

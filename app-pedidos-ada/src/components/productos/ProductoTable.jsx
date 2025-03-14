@@ -173,7 +173,7 @@ const ProductosTable = () => {
         </div>
       </section>
       <div>
-        <div className="overflow-y-hidden pb-20">
+        <div className="overflow-y-hidden pb-20 bg-white rounded-2xl">
           <table className="table table-pin-rows">
             <thead>
               <tr className="text-md font-bold tracking-wide">
@@ -260,6 +260,7 @@ const ProductosTable = () => {
       <Modal
         titulo="Editar Producto"
         isOpen={modalEditar}
+
         onClose={() => setModalEditar(false)}
       >
         <FormEditaProducto

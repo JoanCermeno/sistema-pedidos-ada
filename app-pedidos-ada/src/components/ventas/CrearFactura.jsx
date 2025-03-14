@@ -36,7 +36,7 @@ const CrearFactura = () => {
   }, [page, searchTerm]);
 
   const agregarProductoALaFactura = (productoToAdd) => {
-    console.warn(productoToAdd);
+    
     if (productoToAdd.stock === 0) {
       const Toast = Swal.mixin({
         toast: true,
@@ -62,7 +62,7 @@ const CrearFactura = () => {
   return (
     <div>
       <div className="flex flex-row justify-left w-full px-2">
-        <div className="flex w-[40%] flex-col gap-2 justify-center px-4 pt-4 rounded border border-base-300 shadow-lg bg-base-200 ">
+        <div className="flex w-[40%] flex-col gap-2 justify-center px-4 pt-4 rounded border border-base-300 shadow-lg bg-base-100 ">
           <h1 className="text-2xl font-bold mb-4 text-center">
             Productos Disponibles
           </h1>

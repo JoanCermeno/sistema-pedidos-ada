@@ -1,10 +1,15 @@
 import React from "react";
 import ProductosTable from "./ProductoTable";
-import Navbar from "../Navbar";
+import OverViewProductos from "./OverViewProductos";
+
 const Inventario = () => {
   return (
     <div>
-      {/* Contenido */}
+
+      {/* Vista general */}
+      <OverViewProductos />
+
+      {/* Tabla de productos */}
         <ProductosTable />
     </div>
   );
