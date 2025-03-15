@@ -5,7 +5,7 @@ import Swal from "sweetalert2";
 import ModalCheckbox from "../modales/ModalCheckbox";
 import BuscadorCedulaDinamico from "./BuscadorCedulaDinamico";
 
-const Factura = ({ productoToAdd }) => {
+const Factura = ({ productoToAdd, setProductoToAdd }) => {
   const dolarToday = localStorage.getItem("dolar");
 
   const { callApi, loading, response, error } = usePostRequest(); //solo para el envio de datos
@@ -24,6 +24,7 @@ const Factura = ({ productoToAdd }) => {
   const [esFacturaCredito, setEsFacturaCredito] = useState(false); // <-- ¡NUEVO ESTADO PARA EL CHECKBOX!
 
   useEffect(() => {
+    console.log("Productos de la factura: en el useEffect:", productosFactura);
     if (productoToAdd) {
       console.warn("Producto recibido en Factura:", productoToAdd);
       setProductosFactura((prevState) => {
@@ -60,6 +61,17 @@ const Factura = ({ productoToAdd }) => {
         }
       });
     }
+    // OJO MUY IMPORTANTE: Se establece productoToAdd a null para evitar bucles infinitos.
+    // Explicación:
+    // 1. Este useEffect se ejecuta cuando productoToAdd o tipoPrecioSeleccionadoFactura cambian.
+    // 2. Si productoToAdd tiene un valor (se intenta agregar un producto), se realiza la lógica de adición.
+    // 3. Al final, se llama a setProductoToAdd(null), lo que encola una nueva renderización del componente.
+    // 4. En la siguiente renderización, el valor de productoToAdd será null.
+    // 5. El useEffect se ejecutará de nuevo porque el valor de productoToAdd ha cambiado (de un objeto a null).
+    // 6. Sin embargo, la condición `if (productoToAdd)` será falsa, por lo que la lógica de adición no se ejecutará.
+    // 7. Se volverá a llamar a setProductoToAdd(null), pero el valor ya es null.
+    // 8. En la siguiente verificación de dependencias, React comparará el valor anterior de productoToAdd (null) con el nuevo valor (null). Como no hay cambio, el useEffect no se volverá a ejecutar, evitando así un bucle infinito.
+    setProductoToAdd(null);
   }, [productoToAdd, tipoPrecioSeleccionadoFactura]);
 
   useEffect(() => {
@@ -68,6 +80,11 @@ const Factura = ({ productoToAdd }) => {
 
   // Cuando cambie el tipo de precio, recalcular subtotal y subtotal en Bs.
   useEffect(() => {
+    console.log(
+      "esto es lo que tiene el estado de la factura",
+      productosFactura
+    );
+
     if (tipoPrecioSeleccionadoFactura) {
       console.log(
         "Tipo de precio seleccionado cambió a:",
@@ -228,6 +245,13 @@ const Factura = ({ productoToAdd }) => {
         0
       )
     );
+    //debemos en cada vez que se haga un cambio en la facutra, hay que si o si Quitar o pasar a null
+    //El valor de productoToadd que es la prop que se esta toamndo del padre, es la qu enos dice
+    // Que poductos se les dio click y el usuario desea agregar a la afactura, pero si no se pasa a null
+    // Pues por cada render o cambio, se va a tomar el valor que quedo del reder anterioor. entonces
+    // ESO CREA UN BUG, porque si el usuario cambia el tipo de precio, Y FUERZA UN RENDER, el componeten va a leer el valor del prodcutoToadd
+    // y eso no es sematicamente correcto.
+    setProductoToAdd(null);
   };
 
   const quitarProducto = (id) => {
@@ -237,6 +261,11 @@ const Factura = ({ productoToAdd }) => {
     recalcularTotalFactura();
   };
   const handleLimpiar = () => {
+    //el producto a agregar es la prop que llega del padre, del componete crear factura, y como el siempre esta presente cada vez que hay un render...
+    //se vuelve a agregar el producto a la factura porque esta siempre presente, Entonces hay que quitarlo, para que no ocurra el bug. de que al cambiar el tipo de precio
+    //se vuelva a gregar...
+    setProductoToAdd(null);
+    setProductosFactura([]);
     return;
   };
   const handleGuardar = () => {

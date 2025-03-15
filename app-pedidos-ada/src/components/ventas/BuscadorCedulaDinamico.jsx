@@ -18,7 +18,6 @@ const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
                     label: `${cliente.nombre} (${cliente.cedula})`
                 }));
                 setOpcionesCedulas(opcionesFormateadas);
-                console.log(data)
               
             } catch (error) {
                 console.error("Error al cargar clientes:", error);
@@ -43,7 +42,6 @@ const BuscadorCedulaDinamico = ({onClienteSeleccionado}) => {
     };
 
     const filtrarOpciones = () => {
-        console.log('Opciones:', opcionesCedulas);
         return opcionesCedulas.filter(opcion =>
             opcion.value.toLowerCase().includes(inputValue.toLowerCase()) ||
             opcion.label.toLowerCase().includes(inputValue.toLowerCase())

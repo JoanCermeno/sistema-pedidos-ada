@@ -141,6 +141,7 @@ const CrearFactura = () => {
         {/* Table de factura  */}
         <Factura
         productoToAdd={productoRecientementeSeleccionado} 
+        setProductoToAdd={setProductoRecientementeSeleccionado}
         />
       </div>
     </div>
