@@ -21,7 +21,7 @@ const Navbar = ({ children }) => {
         <div className="drawer"> {/* Contenedor principal Drawer */}
             <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content flex flex-col">
-                <div className="navbar bg-white shadow-md w-full   justify-between">
+                <div className="navbar  shadow-md w-full   justify-between">
                     {!isLoginPage && ( // **Mostrar el botón de hamburguesa SÓLO si NO es la página de login**
                         <div className="flex-none lg:hidden">
                             <label htmlFor="my-drawer-3" aria-label="open sidebar" className="btn btn-square btn-ghost">

@@ -3,6 +3,3 @@
     themes: light --default, dark --prefersdark;
   }
 
-  body{
-    background-color: oklch(0.968 0.007 247.896);
-  }

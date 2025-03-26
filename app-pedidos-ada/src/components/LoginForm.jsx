@@ -45,6 +45,7 @@ const LoginForm = () => {
       });
       Toast.fire({
         icon: "error",
+        
         title: error,
       });
     } finally {
@@ -54,30 +55,30 @@ const LoginForm = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md p-8 shadow-xl rounded-lg bg-slate-50">
-        <h1 className="text-2xl font-bold mb-4 text-center text-orange-950">
+      <div className="w-full max-w-md p-8 shadow-xl rounded-lg bg-base-200 border-base-400 text-base-content"> 
+        <h1 className="text-2xl font-bold mb-4 text-center">
           iniciar sesión
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-600">
+            <label className="block mb-2 text-sm font-medium">
               Usuario
             </label>
             <input
               type="text"
-              className="input input-bordered w-full bg-gray-50 text-orange-950 hadow-sm"
+              className="input input-bordered w-full"
               placeholder="Nombre de usuario"
               value={usuario}
               onChange={(e) => setUsuario(e.target.value)}
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-600">
+            <label className="block mb-2 text-sm font-medium ">
               Clave
             </label>
             <input
               type="password"
-              className="input input-bordered w-full bg-gray-50  shadow-sm text-orange-950"
+              className="input input-bordered w-full   shadow-sm"
               placeholder="Clave"
               value={clave}
               onChange={(e) => setClave(e.target.value)}
@@ -85,7 +86,7 @@ const LoginForm = () => {
           </div>
           <button
             type="submit"
-            className="btn  btn-accent w-full shadow-md hover:shadow-orange-950 font-bold text-md "
+            className="btn  btn-accent w-full shadow-md  font-bold text-md "
           >
             Entrar
             {loading && (
@@ -94,7 +95,6 @@ const LoginForm = () => {
           </button>
           <div className="flex flex-col justify-center items-center gap-1 pt-5">
             <small>
-              {" "}
               Olvidaste tu contraseña? <a href="/resetPassword">Recuperar</a>
             </small>
           </div>
