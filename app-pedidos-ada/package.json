@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite"
+    "start": "serve dist -p 5173"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.9",
