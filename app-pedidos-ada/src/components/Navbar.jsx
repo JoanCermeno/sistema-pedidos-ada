@@ -21,7 +21,7 @@ const Navbar = ({ children }) => {
         <div className="drawer"> {/* Contenedor principal Drawer */}
             <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content flex flex-col">
-                <div className="navbar  shadow-md w-full   justify-between">
+                <div className="navbar bg-base-200 shadow-md w-full   justify-between">
                     {!isLoginPage && ( // **Mostrar el botón de hamburguesa SÓLO si NO es la página de login**
                         <div className="flex-none lg:hidden">
                             <label htmlFor="my-drawer-3" aria-label="open sidebar" className="btn btn-square btn-ghost">
@@ -42,7 +42,7 @@ const Navbar = ({ children }) => {
                         </div>
                     )}
                     <div
-                        className="mx-2 fs-5 px-2 btn btn-ghost :hover:text-primary :hover:font-bold :hover:color-primary   cursor-pointer flex-1 lg:flex-none"
+                        className="mx-2 bg-base-300 fs-5 px-2 btn btn-ghost :hover:text-primary :hover:font-bold :hover:color-primary   cursor-pointer flex-1 lg:flex-none"
                         onClick={handleHomeClick}
                     >
                         {isLoginPage ? "SISTEMA ADA" :   // **Título condicional: "SISTEMA ADA" en login, "El dolar..." en otras páginas**

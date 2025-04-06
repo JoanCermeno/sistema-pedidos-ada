@@ -9,7 +9,20 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
+    
     const apiUrl = import.meta.env.VITE_API_URL;
+    //validar que apiURL este en la variable de entorno
+    if (!apiUrl) {
+      e.preventDefault();
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "La variable de entorno VITE_API_URL no está definida, si este error persite revisa la documentación de la aplicación",
+      });
+      return;
+    }
+
+
     setLoading(true);
     e.preventDefault();
     try {

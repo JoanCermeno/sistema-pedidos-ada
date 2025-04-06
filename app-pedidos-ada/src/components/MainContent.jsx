@@ -39,7 +39,7 @@ const MainContent = () => {
                 {funcionesPrincipales.map((funcion, index) => (
                     <div
                         key={index}
-                        className={`card shadow-lg hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out border-l-5 border-indigo-500 bg-indigo-50`}
+                        className={`card bg-base-300 shadow-lg hover:cursor-pointer hover:shadow-2xl hover:scale-105 transition ease-out border-b-4 border-primary  `}
                         onClick={() => navigate(funcion.ruta)}
                     >
                         <div className="card-body ">

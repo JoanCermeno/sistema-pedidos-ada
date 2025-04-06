@@ -95,40 +95,39 @@ const UpdatePrices = () => {
   return (
     <>
       <div className="flex min-h-screen items-center justify-center">
-        <div className="w-full max-w-md p-8 shadow-lg rounded-lg">
+        <div className="w-full max-w-md p-8 shadow-lg rounded-lg bg-base-300">
           <div className="stats stats-vertical lg:stats-horizontal w-full bg-content shadow-xl">
-            <div className="stat bg-info">
-              <div className="stat-title">Precio del dolar </div>
-              <div className="stat-value">{UltimoPrecio} bs</div>
+            <div className="stat bg-base-100">
+              <div className="stat-title">Tasa Actual </div>
+              <div className="stat-value text-primary">{UltimoPrecio}bs</div>
               <div className="stat-desc">
-                Utilma vez actualizado
-                <b className="pl-1"> {ultimaActualizacion}</b>
+                Ultima actualizacion el<b className="pl-1"> {ultimaActualizacion}</b>
               </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="my-4">
+          <form onSubmit={handleSubmit}  className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
               <input
                 type="number"
                 step="0.01"
                 className="input input-bordered w-full mt-5"
-                placeholder="Ingrese el nuevo precio"
+                placeholder="Tasa hoy"
                 onChange={(e) => setPrecio(e.target.value)}
                 max={1000}
                 min={0}
               />
-              <small className="text-sm stat-desc">
+              <small className="text-sm">
                 Actualizar el precio del dolar en la fecha de hoy es {today}
               </small>
             </div>
             {error && (
-              <div className="animate-shake  text-red-900 text-center border-2  rounded-lg border-red-300  bg-red-100 py-2 mb-2">
+              <div className="animate-shake text-center border-2  rounded-lg border-red-300  bg-red-100  dark:border-red-900 dark:bg-red-600 py-2 mb-2">
                 {error}
               </div>
             )}
             {sussess && (
-              <div className="animate-shake  text-green-900 text-center border-2  rounded-lg border-green-300  bg-green-100 py-2 mb-2">
+              <div className="animate-shake   text-center border-2  rounded-lg border-green-300  bg-green-100 dark:bg-green-900 dark:border-green-950 py-2 mb-2">
                 {sussess}
               </div>
             )}
@@ -153,6 +152,7 @@ const UpdatePrices = () => {
               </div>
             )}
           </form>
+
         </div>
       </div>
     </>

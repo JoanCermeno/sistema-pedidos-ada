@@ -4,7 +4,7 @@ import OverViewProductos from "./OverViewProductos";
 
 const Inventario = () => {
   return (
-    <div>
+    <div className="container mx-auto px-5 ">
 
       {/* Vista general */}
       <OverViewProductos />

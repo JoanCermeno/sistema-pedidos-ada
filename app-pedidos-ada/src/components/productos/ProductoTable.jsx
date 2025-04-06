@@ -107,7 +107,7 @@ const ProductosTable = () => {
   };
 
   return (
-    <div className="container mx-auto px-5">
+    <div className="container bg-base-300 p-5 rounded-2xl">
       <section className="fluid pb-5" id="cargo_inventario"></section>
       <section className="fluid pb-5">
         <div className="flex flex-row gap-1">
@@ -157,7 +157,7 @@ const ProductosTable = () => {
               </svg>
             </label>
             <select
-              className="select select-bordered select-xs max-w-xs"
+              className="select select-bordered select-sm max-w-xs"
               value={limit}
               onChange={(e) => setLimit(e.target.value)}
             >
@@ -172,8 +172,8 @@ const ProductosTable = () => {
           </div>
         </div>
       </section>
-      <div>
-        <div className="overflow-y-hidden pb-20 bg-white rounded-2xl">
+      <div className="bg-base-200 p-5"> 
+        <div className="overflow-y-hidden pb-20">
           <table className="table table-pin-rows">
             <thead>
               <tr className="text-md font-bold tracking-wide">
@@ -226,7 +226,7 @@ const ProductosTable = () => {
                       </small>
                     </td>
 
-                    <td className={`text-center ${producto.stock <= 5 ? 'bg-amber-50' : ''} `}>{producto.stock}</td>    
+                    <td className="text-center" >{producto.stock}</td>    
 
                     <td>
                       <DropdownActions
