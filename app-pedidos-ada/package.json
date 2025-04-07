@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve dist -p 5173"
+    "start": "vite"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.9",
