@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import Papa from "papaparse";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-const ImportarProductos = () => {
+
+const ImportarProductos = ({ modalTargetId }) => {
   const [productos, setProductos] = useState([]);
   const navigate = useNavigate(); // Hook para redirigir
 
@@ -19,10 +20,10 @@ const ImportarProductos = () => {
       complete: (result) => {
         try {
           // Ajustamos los datos procesados
-          const data = result.data.map((producto) => {
-            const nombre = producto["Producto"]?.trim() || "";
-            const descripcion = producto["Descripción"]?.trim() || "";
-            const precioTexto = producto["Precio unitario"]?.trim();
+           const data = result.data.map((producto) => {
+            const nombre = producto["nombre"]?.trim() || "";
+            const descripcion = producto["descripcion"]?.trim() || "";
+            const precioTexto = producto["precio_minorista"]?.trim();
 
             // Si no hay precio, usar 0
             const precio = precioTexto
@@ -56,9 +57,20 @@ const ImportarProductos = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
     const token = localStorage.getItem("token");
 
+    const swalConfig = {
+      // --- LA MAGIA ESTÁ AQUÍ ---
+      target: document.getElementById(modalTargetId), 
+      customClass: {
+        container: 'position-absolute' // Clase necesaria para que se posicione correctamente dentro del target
+      }
+    };
+
+
     try {
       // Mostrar spinner
+      // Mostrar spinner
       Swal.fire({
+        ...swalConfig, // Usamos la configuración base
         title: "Enviando productos...",
         text: "Por favor, espera.",
         allowOutsideClick: false,
@@ -67,7 +79,6 @@ const ImportarProductos = () => {
           Swal.showLoading();
         },
       });
-
       const response = await fetch(`${apiUrl}/productos`, {
         method: "POST",
         headers: {
@@ -86,26 +97,27 @@ const ImportarProductos = () => {
       console.log("Productos enviados correctamente:", resultado);
 
       // Mostrar mensaje de éxito
-      Swal.fire({
+     Swal.fire({
+        ...swalConfig, // Usamos la configuración base
         icon: "success",
         title: "¡Éxito!",
         text: "Productos cargados.",
-        
       }).then((result) => {
-        // Redirigir después de que el usuario haga clic en "Aceptar"
         if (result.isConfirmed) {
-          navigate("/inventario"); 
+          // Opcional: en lugar de navegar, podrías cerrar el modal y refrescar la tabla.
+          // Por ejemplo, llamando a una función onSuccess pasada por props.
+          document.getElementById('import_modal').close();
+          window.location.reload(); // Solución simple para refrescar
         }
       });
     } catch (error) {
       console.error("Error enviando los productos:", error);
-
-      // Mostrar mensaje de error
-      Swal.fire({
+       Swal.fire({
+        ...swalConfig, // Usamos la configuración base
         icon: "error",
         title: "Error",
-        text: "Ocurrió un problema al cargar los productos.",
-      });
+        text: error.message || "Ocurrió un problema al cargar los productos.",
+      });    
     }
   };
 
@@ -135,7 +147,7 @@ const ImportarProductos = () => {
         </ul>
           </section>
 
-      <button className="btn btn-primary btn-sm shadow-md my-5" onClick={enviarProductos}>
+       <button className="btn btn-primary btn-sm shadow-md my-5" onClick={enviarProductos}>
             Enviar productos
           </button>
         </>

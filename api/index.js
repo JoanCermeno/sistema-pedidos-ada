@@ -4,7 +4,6 @@ import knexPlugin from "./plugin/knex.js";
 import knexfile from "./knexfile.js"; 
 import envPlugin from "@fastify/env";
 import cors from "@fastify/cors";
-import fs from "fs";
 
 // variables de entorno
 const schema = {

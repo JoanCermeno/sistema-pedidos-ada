@@ -14,6 +14,14 @@ export const useGetRequest = () => {
 
     try {
       const token = localStorage.getItem('token'); // Obtener token de autenticación
+      // si no se encuentral, leer desde las .env
+      if (!token) {
+        const tokenFromEnv = import.meta.env.VITE_API_TOKEN;
+        if (tokenFromEnv) {
+          localStorage.setItem('token', tokenFromEnv);
+        }
+      }
+
       const response = await fetch(`${baseURL}${url}`, {
         method: 'GET',
         headers: {

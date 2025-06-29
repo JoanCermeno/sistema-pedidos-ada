@@ -34,7 +34,7 @@ const MainContent = () => {
 
     return (
         <div className="flex-1 p-6">
-            <h1 className="text-4xl font-bold mx-4 mb-5">Funciones principales</h1>
+            <h1 className="text-4xl font-bold mx-4 mb-5 text-center">Sistema ADA</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 ">
                 {funcionesPrincipales.map((funcion, index) => (
                     <div

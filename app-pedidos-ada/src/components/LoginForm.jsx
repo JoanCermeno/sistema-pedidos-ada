@@ -59,7 +59,7 @@ const LoginForm = () => {
       Toast.fire({
         icon: "error",
         
-        title: error,
+        title: error.message,
       });
     } finally {
       setLoading(false);

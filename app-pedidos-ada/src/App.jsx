@@ -14,7 +14,7 @@ import Navbar from "./components/Navbar"; // Importa Navbar
 const App = () => {
   return (
     <Navbar>
-      {" "}
+
       {/* Envuelve las Routes dentro del Navbar */}
       <Routes>
         <Route path="/login" element={<LoginForm />} />
@@ -28,7 +28,7 @@ const App = () => {
         </Route>
 
         <Route element={<ProtectedRoute />}>
-          {" "}
+     
           <Route path="/audit" element={<Audit />} />{" "}
         </Route>
 

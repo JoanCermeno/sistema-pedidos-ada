@@ -8,10 +8,11 @@ export async function seed(knex) {
   // Inserta el usuario administrador
   await knex("usuarios").insert([
     {
-      nombre: "admin",
+      nombre: "joan",
       pass: hashedPassword, // Encripta este dato en producción
       created_at: new Date(),
       updated_at: new Date(),
     },
+
   ]);
 }
